@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scenario 3 - The Future Lab</title>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    h1 {
+        color: #00f5ff;
+        text-shadow: 0 0 10px #00f5ff;
+    }
+
+    .container {
+        background: rgba(0,0,0,0.6);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px #00f5ff;
+        width: 80%;
+        max-width: 500px;
+    }
+
+    .countdown {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #ff3c00;
+        font-weight: bold;
+    }
+
+    input {
+        width: 80%;
+        padding: 10px;
+        font-size: 18px;
+        margin-top: 15px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 18px;
+        margin-top: 20px;
+        background: #00f5ff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        color: #000;
+    }
+
+    button:hover {
+        background: #00c4cc;
+    }
+
+    .message {
+        margin-top: 15px;
+        font-size: 18px;
+        font-weight: bold;
+    }
+
+    .success {
+        color: #00ff9d;
+    }
+
+    .error {
+        color: #ff3c00;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Scenario 3 – The Future Lab</h1>
+    <p><em>"Progress Depends on Action"</em></p>
+    <p>Enter ONE English word related to moving forward and leadership.</p>
+    <div class="countdown" id="timer">02:00</div>
+    <input type="text" id="answer" placeholder="Type your answer...">
+    <br>
+    <button onclick="checkAnswer()">Submit</button>
+    <div class="message" id="message"></div>
+</div>
+
+<script>
+    let timeLeft = 120; // 2 minutes
+    let timer = setInterval(() => {
+        let minutes = Math.floor(timeLeft / 60);
+        let seconds = timeLeft % 60;
+        document.getElementById("timer").textContent =
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timeLeft--;
+
+        if (timeLeft < 0) {
+            clearInterval(timer);
+            document.getElementById("message").textContent = "⏳ Time's up!";
+            document.getElementById("message").classList.add("error");
+        }
+    }, 1000);
+
+    function checkAnswer() {
+        let input = document.getElementById("answer").value.trim().toLowerCase();
+        let correctWords = ["follow-up", "deadline", "resilience", "workspace", "empowerment", "leadership"];
+
+        if (input === "") {
+            document.getElementById("message").textContent = "⚠ Please enter a word.";
+            document.getElementById("message").classList.add("error");
+            return;
+        }
+
+        if (correctWords.includes(input)) {
+            document.getElementById("message").textContent = "✅ Correct! The lab door opens...";
+            document.getElementById("message").className = "message success";
+            clearInterval(timer);
+        } else {
+            document.getElementById("message").textContent = "❌ Incorrect. Try again!";
+            document.getElementById("message").className = "message error";
+        }
+    }
+</script>
+
+</body>
+</html>
