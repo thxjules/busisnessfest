@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape the Office</title>
+  <link rel="stylesheet" href="./css/home.css" />
+</head>
+
+<body>
+  <div class="sena">
+    <img src="./img/sena.png" alt="sena" height="150px" width="150px">
+  </div>
+  <div class="container">
+    <h1>Escape the Office</h1>
+    <p class="subtitle">Use your business English to break free...</p>
+
+    <div class="buttons">
+      <button onclick="startGame()">Start Game</button>
+      <button onclick="showInstructions()">Instructions</button>
+    </div>
+  </div>
+
+
+  <div class="modal" id="instructions">
+    <div class="modal-content">
+      <h2>Instructions</h2>
+      <p>You are trapped in a virtual office. Solve business English writing challenges to escape each room. Use the
+        required words in your answers to move forward.</p>
+      <button class="btn_close" onclick="closeInstructions()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function startGame() {
+      window.location.href = "./rooms/homeL1.html";
+    }
+
+    function showInstructions() {
+      document.getElementById("instructions").style.display = "flex";
+    }
+
+    function closeInstructions() {
+      document.getElementById("instructions").style.display = "none";
+    }
+
+  </script>
+</body>
+
+</html>

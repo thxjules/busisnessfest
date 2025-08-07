@@ -1,0 +1,129 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.674), rgba(0, 0, 0, 0.8)),
+  url("../img/level1.jpg") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  font-style: italic;
+  text-align: center;
+  justify-content: left;
+  margin: 20px;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 40px;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+h2 {
+  font-size: 25px;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+  color: #e8dfdc;
+}
+p {
+  font-size: 20px;
+  align-items: center;
+  text-align: center;
+  color: #fdfdfd;
+}
+button {
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background-color: #1c5435;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+button:hover {
+  background-color: #416b46;
+}
+
+#timer {
+  font-size: 1.2em;
+  margin: 15px 0;
+  color: #28fb56;
+}
+
+#folders-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  justify-items: center;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.folder {
+  background: #91a481;
+  border-radius: 10px;
+  border: 2px solid #91a481;
+  width: 250px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.folder img {
+  width: 64px;
+  height: 64px;
+}
+
+.folder p {
+  font-size: 0.9em;
+  margin: 10px 0;
+}
+
+.folder input {
+  padding: 8px;
+  width: 80%;
+  text-align: center;
+  border: 1px solid #154624;
+  border-radius: 6px;
+}
+
+.correct {
+  border-color: green;
+  background-color: #e1f3e1;
+}
+
+.incorrect {
+  border-color: red;
+  background-color: #fbe0e0;
+}
+
+.icon-result {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 20px;
+}
+
+
+#result {
+  margin-top: 20px;
+  font-size: 1.1em;
+}
+
+#continue-btn {
+  display: none;
+  margin-top: 10px;
+  background-color: #5cb85c;
+}
