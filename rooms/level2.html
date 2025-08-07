@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Level 2 – Operations Center</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(#001f1f, #002617);
+      color: #00ff26;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #30b55a;
+    }
+
+    .riddle {
+      width: 80%;
+      max-width: 900px;
+      text-align: center;
+      background-color: rgba(0, 255, 153, 0.1);
+      padding: 20px;
+      border: 1px solid #00ffaa;
+      border-radius: 10px;
+      box-shadow: 0 0 20px #00ffaa55;
+      margin-bottom: 20px;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 20px auto;
+      text-align: left;
+      max-width: 700px;
+    }
+
+    ul li::before {
+      content: "▶ ";
+      color: #00ff99;
+    }
+
+    input[type="text"] {
+      background-color: transparent;
+      border: none;
+      border-bottom: 2px solid #00ff99;
+      color: #00ff99;
+      font-size: 1.2em;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+      width: 300px;
+    }
+
+    input:focus {
+      outline: none;
+      border-bottom: 2px solid #00ffcc;
+    }
+
+    #submit-btn {
+      margin-top: 20px;
+      background-color: #00ff99;
+      color: #001f1f;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    #submit-btn:hover {
+      background-color: #00ffaa;
+    }
+
+    #feedback {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #ff6666;
+    }
+
+    #timer {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      font-size: 1.5em;
+      color: #00ffaa;
+      background-color: #002222aa;
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div id="timer">02:00</div>
+
+  <h1>SCENARIO 2 – OPERATIONS CENTER</h1>
+
+  <div class="riddle">
+    <p><strong>Riddle:</strong> “Prevent Before You Regret”</p>
+    <p>You step into the company’s operations center. Screens flash with alerts and data. A voice says:</p>
+    <p><em>Type ONE English word. It must represent something essential to avoid mistakes and improve how teams work together.</em></p>
+
+    <ul>
+      <li>Studying potential threats in advance.</li>
+      <li>When responsibilities clash between departments.</li>
+      <li>Making sure everything gets in order.</li>
+      <li>Teams making decisions across different areas.</li>
+      <li>Improving something that's broken or messy.</li>
+      <li>Using what’s available to gain an edge.</li>
+    </ul>
+
+    <input type="text" id="answer" placeholder="Type your answer here..." />
+    <button id="submit-btn">Submit</button>
+
+    <div id="feedback"></div>
+  </div>
+
+  <script>
+    const validAnswers = [
+      "risk assessment",
+      "overlap",
+      "sort out",
+      "managements",
+      "fix up",
+      "take advantage"
+    ];
+
+    const timerDisplay = document.getElementById("timer");
+    const submitBtn = document.getElementById("submit-btn");
+    const answerInput = document.getElementById("answer");
+    const feedback = document.getElementById("feedback");
+
+    let timeLeft = 120;
+
+    const countdown = setInterval(() => {
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        feedback.textContent = "Time's up!";
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+        return;
+      }
+
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+      timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds
+        .toString()
+        .padStart(2, '0')}`;
+      timeLeft--;
+    }, 1000);
+
+    submitBtn.addEventListener("click", () => {
+      const userAnswer = answerInput.value.trim().toLowerCase();
+
+      if (validAnswers.includes(userAnswer)) {
+        feedback.style.color = "#00ffcc";
+        feedback.textContent = "✅ Correct! Proceeding to the next room...";
+
+        setTimeout(() => {
+          window.location.href = "./homeL3.html"; 
+        }, 2000);
+      } else {
+        feedback.style.color = "#ff6666";
+        feedback.textContent = "❌ Incorrect. Try again.";
+      }
+    });
+  </script>
+</body>
+</html>
