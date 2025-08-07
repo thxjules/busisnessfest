@@ -15,8 +15,8 @@ body {
 .sena {
   display: flex;
   position: initial;
-  justify-content:space-around;
-  align-items:flex-start;
+  justify-content: space-around;
+  align-items: flex-start;
 }
 
 .container {
@@ -89,4 +89,49 @@ h1 {
 
 .btn_close:hover {
   background-color: #416b46;
+}
+@media screen and (max-width: 480px) {
+  body {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .sena {
+    max-width: 100%;
+    max-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .container {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .buttons button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .btn_close {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
 }

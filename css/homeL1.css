@@ -3,7 +3,7 @@ body {
   padding: 0;
   font-family: "Segoe UI", sans-serif;
   background: linear-gradient(rgba(0, 0, 0, 0.674), rgba(0, 0, 0, 0.8)),
-  url("../img/level1.jpg") no-repeat center center fixed;
+    url("../img/level1.jpg") no-repeat center center fixed;
   background-size: cover;
   color: #fff;
   display: flex;
@@ -15,7 +15,6 @@ body {
 .container {
   font-style: italic;
   text-align: center;
-  justify-content: left;
   margin: 20px;
   padding: 20px;
 }
@@ -32,12 +31,13 @@ h2 {
   letter-spacing: 2px;
   color: #e8dfdc;
 }
+
 p {
   font-size: 20px;
-  align-items: center;
   text-align: center;
   color: #fdfdfd;
 }
+
 button {
   margin: 0.5rem;
   padding: 1rem 2rem;
@@ -49,6 +49,7 @@ button {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+
 button:hover {
   background-color: #416b46;
 }
@@ -116,7 +117,6 @@ button:hover {
   font-size: 20px;
 }
 
-
 #result {
   margin-top: 20px;
   font-size: 1.1em;
@@ -126,4 +126,47 @@ button:hover {
   display: none;
   margin-top: 10px;
   background-color: #5cb85c;
+}
+
+/* Estilos responsive para móviles */
+@media screen and (max-width: 480px) {
+  body {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+    height: auto;
+  }
+
+  .container {
+    padding: 10px;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 30px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+
+  p {
+    font-size: 17px;
+  }
+
+  button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  #folders-container {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .folder {
+    max-width: 100%;
+    flex-direction: column;
+  }
 }
