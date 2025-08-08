@@ -127,6 +127,65 @@
         submitAnswers();
       }
     }, 1000);
+    function submitAnswers() {
+  let correctCount = 0;
+  let hasError = false;
+
+  for (let i = 0; i < 6; i++) {
+    const input = document.getElementById(`input${i}`);
+    const icon = document.getElementById(`icon${i}`);
+    const userAnswer = input.value.trim().toLowerCase();
+    const correct = correctWords[i].toLowerCase();
+
+    input.classList.remove("correct", "incorrect");
+    icon.textContent = "";
+
+    if (userAnswer === "") {
+      input.classList.add("incorrect");
+      icon.textContent = "⚠";
+      hasError = true;
+      continue;
+    }
+
+    if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
+      input.classList.add("incorrect");
+      icon.textContent = "❌ Letters only";
+      hasError = true;
+      continue;
+    }
+
+    if (userAnswer === correct) {
+      input.classList.add("correct");
+      icon.textContent = "✅";
+      correctCount++;
+    } else {
+      input.classList.add("incorrect");
+      icon.textContent = "❌";
+    }
+  }
+
+  const resultDiv = document.getElementById("result");
+  const continueBtn = document.getElementById("continue-btn");
+
+  if (hasError) {
+    resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
+    continueBtn.style.display = "none";
+    return;
+  }
+
+  let totalPoints = correctCount * 5;
+
+  // Guardar puntaje en inglés en localStorage
+  localStorage.setItem("scoreScenario3", totalPoints);
+
+  resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. Final score: <strong>${totalPoints}</strong> points`;
+
+  if (correctCount === 6) {
+    continueBtn.style.display = "inline-block";
+  } else {
+    continueBtn.style.display = "none";
+  }
+}
   </script>
 </body>
 </html>

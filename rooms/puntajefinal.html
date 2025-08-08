@@ -1,0 +1,65 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Game Completed!</title>
+    <style>
+        body {
+            background-color: #f8f8f8;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+        }
+        h1 {
+            color: #333;
+        }
+        .score-box {
+            background: white;
+            display: inline-block;
+            padding: 30px 50px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            font-size: 28px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        button {
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>🏆 Game Completed!</h1>
+    <div class="score-box" id="finalScore">
+        Total Score: 0
+    </div>
+    <br>
+    <button onclick="restartGame()">Play Again</button>
+
+    <script>
+        // Get the total saved score
+        let totalScore = localStorage.getItem("totalScore") || 0;
+
+        // Show it in the box
+        document.getElementById("finalScore").innerText = "Total Score: " + totalScore;
+
+        // Function to restart
+        function restartGame() {
+            localStorage.removeItem("totalScore");
+            window.location.href = "game.html"; // Change to your game file path
+        }
+    </script>
+
+</body>
+</html>

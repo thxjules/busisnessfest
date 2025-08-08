@@ -209,6 +209,12 @@
         feedback.style.color = "#00ffcc";
         feedback.textContent = "✅ Correct! Proceeding to the next room...";
 
+        // Guardar puntaje en localStorage
+        let currentScore = parseInt(localStorage.getItem("totalScore")) || 0;
+        let pointsThisLevel = 10; // Puntos por nivel correcto
+        currentScore += pointsThisLevel;
+        localStorage.setItem("totalScore", currentScore);
+
         setTimeout(() => {
           window.location.href = "./homeL3.html";
         }, 2000);
