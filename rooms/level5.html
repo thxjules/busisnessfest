@@ -1,134 +1,346 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Scenario 3 - The Future Lab</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Scenario 5 – The Future Lab</title>
 <style>
-    body {
-        font-family: 'Arial', sans-serif;
-        margin: 0;
-        padding: 0;
-        background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-        color: white;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-        text-align: center;
-    }
+  :root{
+    --bg:#eaf6ec; --green:#2e8b3a; --card-white:#ffffff; --card-shadow:rgba(0,0,0,0.12);
+  }
+  body{
+    margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    background:var(--bg); color:#102020; display:flex; justify-content:center; padding:28px;
+  }
+  .wrap{ width:100%; max-width:1100px; text-align:center; }
+  h1{ margin:0; font-size:28px; color:#153; }
+  p.lead{ margin:6px 0 18px; color:#234; }
 
-    h1 {
-        color: #00f5ff;
-        text-shadow: 0 0 10px #00f5ff;
-    }
+  #infoRow { display:flex; gap:12px; justify-content:center; align-items:center; margin-bottom:12px; flex-wrap:wrap; }
+  #timer{
+    display:inline-block; background:var(--green); color:white; padding:8px 14px; border-radius:8px;
+    font-weight:700;
+  }
 
-    .container {
-        background: rgba(0,0,0,0.6);
-        padding: 30px;
-        border-radius: 15px;
-        box-shadow: 0 0 20px #00f5ff;
-        width: 80%;
-        max-width: 500px;
-    }
+  .grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:20px;
+    align-items:start;
+  }
 
-    .countdown {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #ff3c00;
-        font-weight: bold;
-    }
+  .card{ perspective:1000px; width:100%; }
+  .card-inner{
+    width:100%; height:0; padding-bottom:100%; position:relative; transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.2,.9,.3,1);
+  }
+  .card.flip .card-inner{ transform:rotateY(180deg); }
 
-    input {
-        width: 80%;
-        padding: 10px;
-        font-size: 18px;
-        margin-top: 15px;
-        border-radius: 5px;
-        border: none;
-        outline: none;
-    }
+  .side{
+    position:absolute; inset:0; border-radius:12px; display:flex; align-items:center; justify-content:center;
+    padding:18px; box-sizing:border-box; backface-visibility:hidden; box-shadow:0 8px 20px var(--card-shadow);
+  }
 
-    button {
-        padding: 10px 20px;
-        font-size: 18px;
-        margin-top: 20px;
-        background: #00f5ff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        color: #000;
-    }
+  .front{
+    background:var(--green); color:var(--card-white); font-weight:700; text-align:center; padding:20px;
+  }
+  .back{
+    background:var(--card-white); color:#0b3; transform:rotateY(180deg); flex-direction:column;
+    border:3px solid rgba(46,139,58,0.12);
+  }
 
-    button:hover {
-        background: #00c4cc;
-    }
+  .initial{
+    width:68px; height:68px; border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:30px; font-weight:800; color:var(--green); background:linear-gradient(180deg, rgba(46,139,58,0.06), rgba(46,139,58,0.02));
+    margin-bottom:10px;
+  }
 
-    .message {
-        margin-top: 15px;
-        font-size: 18px;
-        font-weight: bold;
-    }
+  .hint{ color:#234; font-weight:600; margin-bottom:8px; font-size:14px; min-height:38px; }
+  .back input{
+    width:78%; padding:8px 10px; border-radius:8px; border:2px solid rgba(46,139,58,0.18); text-align:center;
+    font-size:15px;
+  }
+  .back input.ok{ border-color:#16a34a; background:#ecfdf0; }
+  .back input.bad{ border-color:#ef4444; background:#fff5f5; }
 
-    .success {
-        color: #00ff9d;
-    }
+  #controls{ margin-top:18px; display:flex; gap:12px; justify-content:center; align-items:center; }
+  button.primary{ background:var(--green); color:white; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; font-weight:700; }
+  button.ghost{ background:transparent; border:1px solid rgba(0,0,0,0.08); padding:8px 12px; border-radius:8px; cursor:pointer; }
 
-    .error {
-        color: #ff3c00;
-    }
+  #result{ margin-top:14px; font-weight:700; color:#0b3; }
+  @media (max-width:860px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+  @media (max-width:520px){ .grid{ grid-template-columns:1fr; } }
 </style>
 </head>
 <body>
+<div class="wrap">
+  <h1>🔬 SCENARIO 5 — THE FUTURE LAB</h1>
+  <p class="lead"><em>"Progress Depends on Action"</em> — Hover / tap cards to flip. Each back shows the initial and an input.</p>
 
-<div class="container">
-    <h1>Scenario 3 – The Future Lab</h1>
-    <p><em>"Progress Depends on Action"</em></p>
-    <p>Enter ONE English word related to moving forward and leadership.</p>
-    <div class="countdown" id="timer">02:00</div>
-    <input type="text" id="answer" placeholder="Type your answer...">
-    <br>
-    <button onclick="checkAnswer()">Submit</button>
-    <div class="message" id="message"></div>
+  <div id="infoRow">
+    <div id="timer">Time left: 02:00</div>
+  </div>
+
+  <div class="grid" id="cards">
+    <!-- 6 cards (3x2) -->
+    <div class="card" data-answer="POST-EXECUTION">
+      <div class="card-inner">
+        <div class="side front">What comes after finishing a project.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">What comes after finishing a project.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-answer="TIMEFRAME">
+      <div class="card-inner">
+        <div class="side front">A deadline to complete a mission.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">A deadline to complete a mission.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-answer="MOVE FORWARD">
+      <div class="card-inner">
+        <div class="side front">Taking steps after a failure.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">Taking steps after a failure.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-answer="WORK SPACE">
+      <div class="card-inner">
+        <div class="side front">The physical environment that inspires focus.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">The physical environment that inspires focus.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-answer="ENCOURAGE">
+      <div class="card-inner">
+        <div class="side front">Empowering others to keep trying.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">Empowering others to keep trying.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+
+    <div class="card" data-answer="LEADERSHIP">
+      <div class="card-inner">
+        <div class="side front">The ability to lead during change.</div>
+        <div class="side back">
+          <div class="initial"></div>
+          <div class="hint">The ability to lead during change.</div>
+          <input type="text" autocomplete="off" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="controls">
+    <button class="primary" id="checkBtn">Check Answers</button>
+    <button class="ghost" id="resetBtn">Reset</button>
+  </div>
+
+  <div id="result" aria-live="polite"></div>
 </div>
 
 <script>
-    let timeLeft = 120; // 2 minutes
-    let timer = setInterval(() => {
-        let minutes = Math.floor(timeLeft / 60);
-        let seconds = timeLeft % 60;
-        document.getElementById("timer").textContent =
-            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-        timeLeft--;
+(function(){
+  const LEVEL = 5; 
+  const cards = Array.from(document.querySelectorAll('.card'));
+  const timerEl = document.getElementById('timer');
+  const resultEl = document.getElementById('result');
+  const checkBtn = document.getElementById('checkBtn');
+  const resetBtn = document.getElementById('resetBtn');
 
-        if (timeLeft < 0) {
-            clearInterval(timer);
-            document.getElementById("message").textContent = "⏳ Time's up!";
-            document.getElementById("message").classList.add("error");
-        }
-    }, 1000);
-
-    function checkAnswer() {
-        let input = document.getElementById("answer").value.trim().toLowerCase();
-        let correctWords = ["follow-up", "deadline", "resilience", "workspace", "empowerment", "leadership"];
-
-        if (input === "") {
-            document.getElementById("message").textContent = "⚠ Please enter a word.";
-            document.getElementById("message").classList.add("error");
-            return;
-        }
-
-        if (correctWords.includes(input)) {
-            document.getElementById("message").textContent = "✅ Correct! The lab door opens...";
-            document.getElementById("message").className = "message success";
-            clearInterval(timer);
-        } else {
-            document.getElementById("message").textContent = "❌ Incorrect. Try again!";
-            document.getElementById("message").className = "message error";
-        }
+  // ===== funciones para puntaje en localStorage =====
+  function saveLevelScore(level, score) {
+    localStorage.setItem(`score_level_${level}`, score);
+    // Recalcular el puntaje total y guardarlo también (la página final puede leer totalScore)
+    let total = 0;
+    for (let i = 1; i <= 6; i++) {
+        total += parseInt(localStorage.getItem(`score_level_${i}`)) || 0;
     }
-</script>
+    localStorage.setItem("totalScore", total);
+  }
+  // ===== fin funciones puntuación =====
 
+  // Put initial on each back and wire events
+  cards.forEach(card=>{
+    const ans = (card.dataset.answer||'').trim();
+    const normalized = ans.replace(/[\s\-]+/g,'');
+    const initial = normalized.charAt(0) ? normalized.charAt(0).toUpperCase() : '?';
+    card.querySelector('.initial').textContent = initial;
+
+    // flip on click except when clicking input
+    card.addEventListener('click', (e)=>{
+      if(e.target.tagName.toLowerCase() === 'input') return;
+      card.classList.toggle('flip');
+    });
+
+    const input = card.querySelector('input');
+    input.addEventListener('click', e=> e.stopPropagation());
+    // Enter moves to next input or triggers check
+    input.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter'){
+        e.preventDefault();
+        const idx = cards.indexOf(card);
+        const next = cards[idx+1];
+        if(next) { next.classList.add('flip'); next.querySelector('input').focus(); }
+        else checkAnswers();
+      }
+    });
+  });
+
+  // Timer
+  let timeLeft = 120;
+  let timerInterval = setInterval(()=>{
+    const mm = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
+    const ss = String(Math.max(0,timeLeft)%60).padStart(2,'0');
+    timerEl.textContent = `Time left: ${mm}:${ss}`;
+    timeLeft--;
+    if(timeLeft < 0){
+      clearInterval(timerInterval);
+      resultEl.textContent = "⏰ Time's up! Auto-checking answers...";
+      checkAnswers({timeout:true});
+    }
+  },1000);
+
+  // Normalize helper: remove spaces/hyphens, uppercase
+  function normalize(s){
+    return (s||'').toString().trim().replace(/[\s\-]+/g,'').toUpperCase();
+  }
+
+  // Validation: only letters, spaces and hyphen allowed
+  function validInput(s){
+    return /^[A-Za-z\s\-]+$/.test(s);
+  }
+
+  function checkAnswers(opts={timeout:false}){
+    const timeout = !!opts.timeout;
+    // If not timeout, ensure all filled and valid
+    if(!timeout){
+      for(const c of cards){
+        const v = c.querySelector('input').value.trim();
+        if(v === '' || !validInput(v)){
+          resultEl.style.color = '#b35a00';
+          resultEl.textContent = '⚠ Please fill every card with letters only (spaces/hyphens allowed).';
+          // focus first bad
+          const bad = cards.find(x=>{ const val=x.querySelector('input').value.trim(); return val==='' || !validInput(val); });
+          if(bad) bad.querySelector('input').focus();
+          return;
+        }
+      }
+    }
+
+    // Stop timer, disable inputs, show backs
+    clearInterval(timerInterval);
+    cards.forEach(c=>{
+      c.classList.add('flip');
+      c.querySelector('input').disabled = true;
+    });
+
+    // Evaluate
+    let correct = 0;
+    cards.forEach(card=>{
+      const user = normalize(card.querySelector('input').value);
+      const expected = normalize(card.dataset.answer);
+      const inputEl = card.querySelector('input');
+      if(user === expected){
+        inputEl.classList.add('ok');
+        inputEl.classList.remove('bad');
+        correct++;
+      } else {
+        inputEl.classList.add('bad');
+        inputEl.classList.remove('ok');
+      }
+    });
+
+    // Score mapping
+    let score = 0;
+    switch(correct){
+      case 6: score = 25; break;
+      case 5: score = 20; break;
+      case 4: score = 15; break;
+      case 3: score = 10; break;
+      case 2: score = 5; break;
+      case 1: score = 1; break;
+      default: score = 0;
+    }
+
+    // show result and create continue button that saves and redirects
+    resultEl.style.color = '#0b3';
+    resultEl.innerHTML = `✅ Correct: <strong>${correct}</strong> — Score: <strong>${score}</strong> pts.`;
+
+    // create continue button (only once)
+    const existing = document.getElementById('continue');
+    if(!existing){
+      const btn = document.createElement('button');
+      btn.id = 'continue';
+      btn.textContent = 'Continue  to Final Score';
+      btn.style.marginLeft = '12px';
+      btn.style.padding = '6px 10px';
+      btn.style.borderRadius = '6px';
+      btn.style.border = 'none';
+      btn.style.background = 'var(--green)';
+      btn.style.color = 'white';
+      btn.style.cursor = 'pointer';
+      // al hacer click guarda el puntaje de este nivel y va a puntaje_final.html
+      btn.addEventListener('click', ()=>{
+        saveLevelScore(LEVEL, score);
+        window.location.href = 'puntajefinal.html'; // archivo final que muestra total
+      });
+      resultEl.appendChild(btn);
+    } else {
+      existing.onclick = ()=>{
+        saveLevelScore(LEVEL, score);
+        window.location.href = 'puntajefinal.html';
+      };
+    }
+  }
+
+  function resetAll(){
+    clearInterval(timerInterval);
+    // reset timer
+    timeLeft = 120;
+    timerInterval = setInterval(()=>{
+      const mm = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
+      const ss = String(Math.max(0,timeLeft)%60).padStart(2,'0');
+      timerEl.textContent = `Time left: ${mm}:${ss}`;
+      timeLeft--;
+      if(timeLeft < 0){ clearInterval(timerInterval); resultEl.textContent="⏰ Time's up! Auto-checking..."; checkAnswers({timeout:true}); }
+    },1000);
+
+    // clear cards
+    cards.forEach(c=>{
+      c.classList.remove('flip');
+      const ip = c.querySelector('input');
+      ip.disabled = false;
+      ip.value = '';
+      ip.classList.remove('ok','bad');
+      c.querySelector('.back').classList.remove('ok','wrong');
+    });
+    resultEl.textContent = '';
+  }
+
+  checkBtn.addEventListener('click', ()=> checkAnswers({timeout:false}));
+  resetBtn.addEventListener('click', resetAll);
+
+})();
+</script>
 </body>
 </html>
