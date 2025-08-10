@@ -183,20 +183,47 @@
     const answerInput = document.getElementById("answer");
     const feedback = document.getElementById("feedback");
 
-    let timeLeft = 120;
+    const TIMER_KEY = "timeLeft_level2";
+
+    // Recuperar tiempo guardado o usar 120 segundos
+    let timeLeft = parseInt(localStorage.getItem(TIMER_KEY));
+    if (isNaN(timeLeft) || timeLeft < 0) timeLeft = 120;
+
+    let gameFinished = false;
+
+    // Cargar progreso guardado (respuesta)
+    let savedAnswer = localStorage.getItem("progress_level2") || "";
+    if (savedAnswer) {
+      answerInput.value = savedAnswer;
+    }
+
+    // Guardar cada cambio en localStorage mientras escribe
+    answerInput.addEventListener("input", () => {
+      if (!gameFinished) {
+        localStorage.setItem("progress_level2", answerInput.value);
+      }
+    });
 
     const countdown = setInterval(() => {
       if (timeLeft <= 0) {
         clearInterval(countdown);
+
+        feedback.textContent = "Time's up!";
+        feedback.style.color = "#ff6666";
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
 
         // Guardar 0 puntos para este nivel porque se acabó el tiempo
         let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
         scores[1] = 0; // índice 1 para nivel 2
         localStorage.setItem("levelScores", JSON.stringify(scores));
 
-        feedback.textContent = "Time's up!";
-        submitBtn.disabled = true;
-        answerInput.disabled = true;
+        // Limpiar progreso guardado
+        localStorage.removeItem("progress_level2");
+        // Limpiar tiempo guardado
+        localStorage.removeItem(TIMER_KEY);
+
+        gameFinished = true;
 
         // Redirigir al siguiente nivel después de 2 segundos
         setTimeout(() => {
@@ -210,6 +237,9 @@
       let seconds = timeLeft % 60;
       timerDisplay.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
       timeLeft--;
+
+      // Guardar tiempo restante
+      localStorage.setItem(TIMER_KEY, timeLeft);
     }, 1000);
 
     submitBtn.addEventListener("click", () => {
@@ -230,12 +260,29 @@
         scores[1] = pointsThisLevel; // índice 1 para nivel 2
         localStorage.setItem("levelScores", JSON.stringify(scores));
 
+        // Limpiar progreso guardado
+        localStorage.removeItem("progress_level2");
+        // Limpiar tiempo guardado
+        localStorage.removeItem(TIMER_KEY);
+
+        gameFinished = true;
+        submitBtn.disabled = true;
+        answerInput.disabled = true;
+
         setTimeout(() => {
           window.location.href = "./homeL3.html"; // Cambiar ruta al siguiente nivel
         }, 2000);
       } else {
         feedback.style.color = "#ff6666";
         feedback.textContent = "❌ Incorrect. Try again.";
+      }
+    });
+
+    // Confirmar antes de salir o recargar si no terminó el juego
+    window.addEventListener('beforeunload', function(e) {
+      if (!gameFinished) {
+        e.preventDefault();
+        e.returnValue = '';
       }
     });
   </script>

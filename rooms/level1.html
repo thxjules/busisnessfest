@@ -1,13 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escape Room - Level 1</title>
   <link rel="stylesheet" href="../css/homeL1.css">
 </head>
-
 <body>
   <section class="Welcome">
     <div class="container">
@@ -24,6 +22,8 @@
   </section>
 
   <script>
+    let gameFinished = false; // VARIABLE para controlar si terminó el juego
+
     function next() {
       window.location.href = "./homeL2.html";
     }
@@ -48,22 +48,40 @@
 
     const folderContainer = document.getElementById("folders-container");
 
+    // Carga inicial del progreso guardado
+    let savedProgress = JSON.parse(localStorage.getItem("progress_level1")) || {};
+
     for (let i = 0; i < 6; i++) {
       const div = document.createElement("div");
       div.className = "folder";
       div.innerHTML = `
         <p><strong>Hint ${i + 1}</strong></p>
         <p>${folderHints[i]}</p>
-        <input type="text" id="input${i}" placeholder="Type answer">
+        <input type="text" id="input${i}" placeholder="Type answer" value="${savedProgress[`input${i}`] || ''}">
         <span class="icon-result" id="icon${i}"></span>
       `;
       folderContainer.appendChild(div);
     }
 
-    // Variables para acceder a inputs y botones
     const submitBtn = document.getElementById("submit-btn");
     const continueBtn = document.getElementById("continue-btn");
     const resultDiv = document.getElementById("result");
+
+    // Guardar cada cambio en localStorage
+    function saveProgress(inputId, value) {
+      savedProgress[inputId] = value;
+      localStorage.setItem("progress_level1", JSON.stringify(savedProgress));
+    }
+
+    // Añadimos event listeners para guardar al escribir
+    for (let i = 0; i < 6; i++) {
+      const input = document.getElementById(`input${i}`);
+      input.addEventListener('input', (e) => {
+        if (!gameFinished) {  // Solo guardar si no terminó
+          saveProgress(e.target.id, e.target.value);
+        }
+      });
+    }
 
     function submitAnswers() {
       let correctCount = 0;
@@ -131,31 +149,59 @@
       submitBtn.disabled = true;
       // Deshabilitar inputs para que no puedan seguir escribiendo
       for (let i = 0; i < 6; i++) {
-        document.getElementById(`input${i}`).disabled = true;
+        const inp = document.getElementById(`input${i}`);
+        inp.disabled = true;
       }
+
+      // Marcar juego como terminado
+      gameFinished = true;
+
+      // Limpiar progreso guardado porque ya terminó
+      localStorage.removeItem("progress_level1");
+
+      // Limpiar tiempo guardado porque ya terminó
+      localStorage.removeItem("timeLeft_level1");
 
       // Mostrar botón para continuar
       continueBtn.style.display = "inline-block";
     }
 
-    // Temporizador
-    let time = 120;
+    // ===== TEMPORIZADOR CON GUARDADO EN localStorage =====
+    const TIMER_KEY = "timeLeft_level1";
+
+    // Recuperar tiempo guardado o usar 120 segundos
+    let time = parseInt(localStorage.getItem(TIMER_KEY));
+    if (isNaN(time) || time < 0) time = 120;
+
     const timerEl = document.getElementById("timer");
 
     const countdown = setInterval(() => {
-      if (time < 0) {
-        clearInterval(countdown);
-        timerEl.textContent = "Time's up!";
-        submitAnswers();
-        return;
-      }
-
       const minutes = Math.floor(time / 60);
       const seconds = time % 60;
       timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
       time--;
+
+      if (time < 0) {
+        clearInterval(countdown);
+        timerEl.textContent = "Time's up!";
+        localStorage.removeItem(TIMER_KEY); // borrar tiempo guardado al acabar
+        submitAnswers();
+        gameFinished = true;
+        next(); // Avanzar automático al siguiente nivel
+      } else {
+        // Guardar tiempo restante
+        localStorage.setItem(TIMER_KEY, time);
+      }
     }, 1000);
+
+    // Confirmar antes de salir o recargar si no terminó el juego
+    window.addEventListener('beforeunload', function(e) {
+      if (!gameFinished) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   </script>
 </body>
-
 </html>

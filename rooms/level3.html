@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -72,6 +72,7 @@
 
     const folderContainer = document.getElementById("folders-container");
 
+    // Crear inputs y cargar progreso guardado si existe
     for (let i = 0; i < folderHints.length; i++) {
       const div = document.createElement("div");
       div.className = "folder";
@@ -84,9 +85,33 @@
       folderContainer.appendChild(div);
     }
 
+    // Recuperar progreso guardado (array de respuestas)
+    let savedProgress = JSON.parse(localStorage.getItem("progress_level3")) || [];
+    // Llenar inputs con progreso si hay
+    for (let i = 0; i < correctWords.length; i++) {
+      if (savedProgress[i]) {
+        document.getElementById(`input${i}`).value = savedProgress[i];
+      }
+    }
+
     const submitBtn = document.getElementById("submit-btn");
     const continueBtn = document.getElementById("continue-btn");
     const resultDiv = document.getElementById("result");
+
+    let gameFinished = false;
+
+    // Guardar cambios en inputs en localStorage
+    for (let i = 0; i < correctWords.length; i++) {
+      document.getElementById(`input${i}`).addEventListener("input", () => {
+        if (!gameFinished) {
+          let currentProgress = [];
+          for (let j = 0; j < correctWords.length; j++) {
+            currentProgress[j] = document.getElementById(`input${j}`).value;
+          }
+          localStorage.setItem("progress_level3", JSON.stringify(currentProgress));
+        }
+      });
+    }
 
     function submitAnswers() {
       let correctCount = 0;
@@ -142,7 +167,7 @@
         default: totalPoints = 0;
       }
 
-      // Guardar en localStorage
+      // Guardar puntaje en localStorage
       let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
       levelScores[2] = totalPoints; 
       localStorage.setItem("levelScores", JSON.stringify(levelScores));
@@ -156,26 +181,51 @@
       }
       submitBtn.disabled = true;
 
+      // Limpiar progreso guardado porque terminó
+      localStorage.removeItem("progress_level3");
+      // Limpiar tiempo guardado porque terminó
+      localStorage.removeItem("timeLeft_level3");
+
+      gameFinished = true;
+
       continueBtn.style.display = "inline-block";
       return true;
     }
 
-    let time = 120;
+    // Recuperar tiempo guardado o usar 120 segundos
+    let time = parseInt(localStorage.getItem("timeLeft_level3"));
+    if (isNaN(time) || time < 0) time = 120;
     const timerEl = document.getElementById("timer");
 
     const countdown = setInterval(() => {
       if (time < 0) {
         clearInterval(countdown);
         timerEl.textContent = "Time's up!";
-        // Llamamos submitAnswers para mostrar resultado y deshabilitar
+
+        // Llamar submitAnswers para mostrar resultado y bloquear inputs
         submitAnswers();
+
+        // Avanzar automáticamente después de 3 segundos
+        setTimeout(next, 3000);
+
+        return;
       } else {
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
         timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
         time--;
+        // Guardar tiempo restante
+        localStorage.setItem("timeLeft_level3", time);
       }
     }, 1000);
+
+    // Confirmar antes de salir o recargar si no terminó el juego
+    window.addEventListener('beforeunload', function(e) {
+      if (!gameFinished) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
   </script>
 </body>
 </html>

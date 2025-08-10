@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="es">
 <head>
 <meta charset="utf-8" />
@@ -167,6 +167,8 @@
   const checkBtn = document.getElementById('checkBtn');
   const resetBtn = document.getElementById('resetBtn');
 
+  let gameFinished = false;
+
   // ===== funciones para puntaje en localStorage =====
   function saveLevelScore(level, totalPoints) {
     let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
@@ -178,37 +180,63 @@
   }
   // ===== fin funciones puntuación =====
 
-  cards.forEach(card=>{
+  cards.forEach((card, index) => {
     const ans = (card.dataset.answer||'').trim();
     const normalized = ans.replace(/[\s\-]+/g,'');
     const initial = normalized.charAt(0) ? normalized.charAt(0).toUpperCase() : '?';
     card.querySelector('.initial').textContent = initial;
 
-    card.addEventListener('click', (e)=>{
+    card.addEventListener('click', (e) => {
       if(e.target.tagName.toLowerCase() === 'input') return;
       card.classList.toggle('flip');
     });
 
     const input = card.querySelector('input');
-    input.addEventListener('click', e=> e.stopPropagation());
-    input.addEventListener('keydown', (e)=>{
+    input.addEventListener('click', e => e.stopPropagation());
+
+    // Recuperar progreso guardado:
+    const savedProgress = JSON.parse(localStorage.getItem('progress_level5')) || [];
+    if(savedProgress[index]) {
+      input.value = savedProgress[index];
+      card.classList.add('flip'); // Mostrar la parte trasera si tiene respuesta
+    }
+
+    // Guardar progreso al escribir:
+    input.addEventListener('input', () => {
+      if(!gameFinished) {
+        let currentProgress = [];
+        cards.forEach(c => currentProgress.push(c.querySelector('input').value));
+        localStorage.setItem('progress_level5', JSON.stringify(currentProgress));
+      }
+    });
+
+    input.addEventListener('keydown', (e) => {
       if(e.key === 'Enter'){
         e.preventDefault();
-        const idx = cards.indexOf(card);
-        const next = cards[idx+1];
-        if(next) { next.classList.add('flip'); next.querySelector('input').focus(); }
-        else checkAnswers();
+        const nextCard = cards[index + 1];
+        if(nextCard) {
+          nextCard.classList.add('flip');
+          nextCard.querySelector('input').focus();
+        } else {
+          checkAnswers();
+        }
       }
     });
   });
 
+  // Recuperar tiempo guardado o usar 120 segundos
+  let timeLeft = parseInt(localStorage.getItem('timeLeft_level5'));
+  if (isNaN(timeLeft) || timeLeft < 0) timeLeft = 120;
+
   // Timer
-  let timeLeft = 120;
-  let timerInterval = setInterval(()=>{
+  let timerInterval = setInterval(() => {
     const mm = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
     const ss = String(Math.max(0,timeLeft)%60).padStart(2,'0');
     timerEl.textContent = `Time left: ${mm}:${ss}`;
     timeLeft--;
+    // Guardar tiempo restante
+    localStorage.setItem('timeLeft_level5', timeLeft);
+
     if(timeLeft < 0){
       clearInterval(timerInterval);
       resultEl.textContent = "⏰ Time's up! Auto-checking answers...";
@@ -296,6 +324,9 @@
 
       btn.addEventListener('click', ()=>{
         saveLevelScore(LEVEL, score);
+        localStorage.removeItem('progress_level5'); // borrar progreso guardado
+        localStorage.removeItem('timeLeft_level5'); // borrar tiempo guardado
+        gameFinished = true;
         window.location.href = 'puntajefinal.html';
       });
 
@@ -303,6 +334,9 @@
     } else {
       existing.onclick = ()=>{
         saveLevelScore(LEVEL, score);
+        localStorage.removeItem('progress_level5');
+        localStorage.removeItem('timeLeft_level5');
+        gameFinished = true;
         window.location.href = 'puntajefinal.html';
       };
     }
@@ -311,12 +345,18 @@
   function resetAll(){
     clearInterval(timerInterval);
     timeLeft = 120;
+    localStorage.removeItem('timeLeft_level5'); // borrar tiempo guardado
     timerInterval = setInterval(()=>{
       const mm = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
       const ss = String(Math.max(0,timeLeft)%60).padStart(2,'0');
       timerEl.textContent = `Time left: ${mm}:${ss}`;
       timeLeft--;
-      if(timeLeft < 0){ clearInterval(timerInterval); resultEl.textContent="⏰ Time's up! Auto-checking..."; checkAnswers({timeout:true}); }
+      localStorage.setItem('timeLeft_level5', timeLeft);
+      if(timeLeft < 0){
+        clearInterval(timerInterval);
+        resultEl.textContent="⏰ Time's up! Auto-checking...";
+        checkAnswers({timeout:true});
+      }
     },1000);
 
     cards.forEach(c=>{
@@ -325,16 +365,24 @@
       ip.disabled = false;
       ip.value = '';
       ip.classList.remove('ok','bad');
-      c.querySelector('.back').classList.remove('ok','wrong');
     });
     checkBtn.disabled = false;
     resetBtn.disabled = false;
     resultEl.textContent = '';
+    localStorage.removeItem('progress_level5');
+    gameFinished = false;
   }
+
+  // Confirmar antes de cerrar o recargar si no terminó
+  window.addEventListener('beforeunload', function(e) {
+    if(!gameFinished) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
 
   checkBtn.addEventListener('click', ()=> checkAnswers({timeout:false}));
   resetBtn.addEventListener('click', resetAll);
-
 })();
 </script>
 </body>
