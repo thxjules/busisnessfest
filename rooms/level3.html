@@ -1,9 +1,36 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Escape Room - Scenario 3</title>
   <link rel="stylesheet" href="../css/homeL1.css">
+  <style>
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 300px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 10px;
+    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
+      p {
+        font-size: 0.9rem;
+      }
+      input[type="text"] {
+        max-width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
   <section class="Welcome">
@@ -14,9 +41,9 @@
 
       <div id="folders-container"></div>
 
-      <button onclick="submitAnswers()">Unlock</button>
+      <button onclick="submitAnswers()" id="submit-btn">Unlock</button>
       <div id="result"></div>
-      <button id="continue-btn" onclick="next()">Continue</button>
+      <button id="continue-btn" onclick="next()" style="display:none;">Continue</button>
     </div>
   </section>
 
@@ -45,7 +72,7 @@
 
     const folderContainer = document.getElementById("folders-container");
 
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < folderHints.length; i++) {
       const div = document.createElement("div");
       div.className = "folder";
       div.innerHTML = `
@@ -57,11 +84,15 @@
       folderContainer.appendChild(div);
     }
 
+    const submitBtn = document.getElementById("submit-btn");
+    const continueBtn = document.getElementById("continue-btn");
+    const resultDiv = document.getElementById("result");
+
     function submitAnswers() {
       let correctCount = 0;
       let hasError = false;
 
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < correctWords.length; i++) {
         const input = document.getElementById(`input${i}`);
         const icon = document.getElementById(`icon${i}`);
         const userAnswer = input.value.trim().toLowerCase();
@@ -94,98 +125,57 @@
         }
       }
 
-      const resultDiv = document.getElementById("result");
-      const continueBtn = document.getElementById("continue-btn");
-
       if (hasError) {
         resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
         continueBtn.style.display = "none";
-        return;
+        return false;
       }
 
-      let totalPoints = correctCount * 5;
-
-      resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. Final score: <strong>${totalPoints}</strong> points`;
-
-      if (correctCount === 6) {
-        continueBtn.style.display = "inline-block";
-      } else {
-        continueBtn.style.display = "none";
+      let totalPoints = 0;
+      switch (correctCount) {
+        case 6: totalPoints = 20; break;
+        case 5: totalPoints = 15; break;
+        case 4: totalPoints = 10; break;
+        case 3: totalPoints = 5; break;
+        case 2: totalPoints = 2; break;
+        case 1: totalPoints = 1; break;
+        default: totalPoints = 0;
       }
+
+      // Guardar en localStorage
+      let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
+      levelScores[2] = totalPoints; 
+      localStorage.setItem("levelScores", JSON.stringify(levelScores));
+
+      resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. 
+                             Points this level: <strong>${totalPoints}</strong>`;
+
+      // Deshabilitar inputs y botón para evitar más respuestas
+      for (let i = 0; i < correctWords.length; i++) {
+        document.getElementById(`input${i}`).disabled = true;
+      }
+      submitBtn.disabled = true;
+
+      continueBtn.style.display = "inline-block";
+      return true;
     }
 
     let time = 120;
     const timerEl = document.getElementById("timer");
+
     const countdown = setInterval(() => {
-      const minutes = Math.floor(time / 60);
-      const seconds = time % 60;
-      timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-      time--;
       if (time < 0) {
         clearInterval(countdown);
         timerEl.textContent = "Time's up!";
+        // Llamamos submitAnswers para mostrar resultado y deshabilitar
         submitAnswers();
+      } else {
+        const minutes = Math.floor(time / 60);
+        const seconds = time % 60;
+        timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+        time--;
       }
     }, 1000);
-    function submitAnswers() {
-  let correctCount = 0;
-  let hasError = false;
-
-  for (let i = 0; i < 6; i++) {
-    const input = document.getElementById(`input${i}`);
-    const icon = document.getElementById(`icon${i}`);
-    const userAnswer = input.value.trim().toLowerCase();
-    const correct = correctWords[i].toLowerCase();
-
-    input.classList.remove("correct", "incorrect");
-    icon.textContent = "";
-
-    if (userAnswer === "") {
-      input.classList.add("incorrect");
-      icon.textContent = "⚠";
-      hasError = true;
-      continue;
-    }
-
-    if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
-      input.classList.add("incorrect");
-      icon.textContent = "❌ Letters only";
-      hasError = true;
-      continue;
-    }
-
-    if (userAnswer === correct) {
-      input.classList.add("correct");
-      icon.textContent = "✅";
-      correctCount++;
-    } else {
-      input.classList.add("incorrect");
-      icon.textContent = "❌";
-    }
-  }
-
-  const resultDiv = document.getElementById("result");
-  const continueBtn = document.getElementById("continue-btn");
-
-  if (hasError) {
-    resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
-    continueBtn.style.display = "none";
-    return;
-  }
-
-  let totalPoints = correctCount * 5;
-
-  // Guardar puntaje en inglés en localStorage
-  localStorage.setItem("scoreScenario3", totalPoints);
-
-  resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. Final score: <strong>${totalPoints}</strong> points`;
-
-  if (correctCount === 6) {
-    continueBtn.style.display = "inline-block";
-  } else {
-    continueBtn.style.display = "none";
-  }
-}
   </script>
 </body>
 </html>

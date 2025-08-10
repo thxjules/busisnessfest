@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>    
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -188,17 +188,27 @@
     const countdown = setInterval(() => {
       if (timeLeft <= 0) {
         clearInterval(countdown);
+
+        // Guardar 0 puntos para este nivel porque se acabó el tiempo
+        let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+        scores[1] = 0; // índice 1 para nivel 2
+        localStorage.setItem("levelScores", JSON.stringify(scores));
+
         feedback.textContent = "Time's up!";
         submitBtn.disabled = true;
         answerInput.disabled = true;
+
+        // Redirigir al siguiente nivel después de 2 segundos
+        setTimeout(() => {
+          window.location.href = "./homeL3.html";
+        }, 2000);
+
         return;
       }
 
       let minutes = Math.floor(timeLeft / 60);
       let seconds = timeLeft % 60;
-      timerDisplay.textContent = `${minutes
-        .toString()
-        .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      timerDisplay.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
       timeLeft--;
     }, 1000);
 
@@ -207,16 +217,21 @@
 
       if (validAnswers.includes(userAnswer)) {
         feedback.style.color = "#00ffcc";
-        feedback.textContent = "✅ Correct! Proceeding to the next room...";
+        feedback.textContent = "✅ Correct! You earned 20 points.";
 
-        // Guardar puntaje en localStorage
+        // --- Guardar puntaje acumulado ---
         let currentScore = parseInt(localStorage.getItem("totalScore")) || 0;
-        let pointsThisLevel = 10; // Puntos por nivel correcto
+        let pointsThisLevel = 20; // 20 puntos si es correcto
         currentScore += pointsThisLevel;
         localStorage.setItem("totalScore", currentScore);
 
+        // --- Guardar puntaje de este nivel en arreglo ---
+        let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+        scores[1] = pointsThisLevel; // índice 1 para nivel 2
+        localStorage.setItem("levelScores", JSON.stringify(scores));
+
         setTimeout(() => {
-          window.location.href = "./homeL3.html";
+          window.location.href = "./homeL3.html"; // Cambiar ruta al siguiente nivel
         }, 2000);
       } else {
         feedback.style.color = "#ff6666";

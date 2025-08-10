@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escape Room - Level 1</title>
   <link rel="stylesheet" href="../css/homeL1.css">
 </head>
-<body>
 
+<body>
   <section class="Welcome">
     <div class="container">
       <h1>The Key to Business Progress</h1>
@@ -16,133 +17,145 @@
 
       <div id="folders-container"></div>
 
-      <button onclick="submitAnswers()">Unlock</button>
+      <button onclick="submitAnswers()" id="submit-btn">Unlock</button>
       <div id="result"></div>
-      <button id="continue-btn" onclick="next()">Continue</button>
+      <button id="continue-btn" style="display:none;" onclick="next()">Continue</button>
     </div>
   </section>
 
   <script>
-   
-  function next() {
-    window.location.href = "./homeL2.html";
-  }
+    function next() {
+      window.location.href = "./homeL2.html";
+    }
 
-  const correctWords = [
-    "methodological",
-    "expectation",
-    "team",
-    "grow",
-    "planned",
-    "brand loyalty"
-  ];
+    const correctWords = [
+      "methodological",
+      "expectation",
+      "team",
+      "grow",
+      "planned",
+      "brand loyalty"
+    ];
 
-  const folderHints = [
-    "A logical and organized way of working.",
-    "A future goal to be achieved.",
-    "The strength of collaboration.",
-    "The constant drive to grow.",
-    "A well-structured strategy.",
-    "Loyalty of customers who love a brand."
-  ];
+    const folderHints = [
+      "A logical and organized way of working.",
+      "A future goal to be achieved.",
+      "The strength of collaboration.",
+      "The constant drive to grow.",
+      "A well-structured strategy.",
+      "Loyalty of customers who love a brand."
+    ];
 
-  const folderContainer = document.getElementById("folders-container");
-
-  for (let i = 0; i < 6; i++) {
-    const div = document.createElement("div");
-    div.className = "folder";
-    div.innerHTML = `
-      <p><strong>Hint ${i + 1}</strong></p>
-      <p>${folderHints[i]}</p>
-      <input type="text" id="input${i}" placeholder="Type answer">
-      <span class="icon-result" id="icon${i}"></span>
-    `;
-    folderContainer.appendChild(div);
-  }
-
-  function submitAnswers() {
-    let correctCount = 0;
-    let hasError = false;
+    const folderContainer = document.getElementById("folders-container");
 
     for (let i = 0; i < 6; i++) {
-      const input = document.getElementById(`input${i}`);
-      const icon = document.getElementById(`icon${i}`);
-      const userAnswer = input.value.trim().toLowerCase();
-      const correct = correctWords[i].toLowerCase();
-
-      input.classList.remove("correct", "incorrect");
-      icon.textContent = "";
-
-      if (userAnswer === "") {
-        input.classList.add("incorrect");
-        icon.textContent = "⚠";
-        hasError = true;
-        continue;
-      }
-
-      if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
-        input.classList.add("incorrect");
-        icon.textContent = "❌ Letters only";
-        hasError = true;
-        continue;
-      }
-
-      if (userAnswer === correct) {
-        input.classList.add("correct");
-        icon.textContent = "✅";
-        correctCount++;
-      } else {
-        input.classList.add("incorrect");
-        icon.textContent = "❌";
-      }
+      const div = document.createElement("div");
+      div.className = "folder";
+      div.innerHTML = `
+        <p><strong>Hint ${i + 1}</strong></p>
+        <p>${folderHints[i]}</p>
+        <input type="text" id="input${i}" placeholder="Type answer">
+        <span class="icon-result" id="icon${i}"></span>
+      `;
+      folderContainer.appendChild(div);
     }
 
-    const resultDiv = document.getElementById("result");
+    // Variables para acceder a inputs y botones
+    const submitBtn = document.getElementById("submit-btn");
     const continueBtn = document.getElementById("continue-btn");
+    const resultDiv = document.getElementById("result");
 
-    if (hasError) {
-      resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
-      continueBtn.style.display = "none";
-      return;
-    }
+    function submitAnswers() {
+      let correctCount = 0;
+      let hasError = false;
 
-    let totalPoints = 0;
-    switch (correctCount) {
-      case 6: totalPoints = 25; break;
-      case 5: totalPoints = 20; break;
-      case 4: totalPoints = 15; break;
-      case 3: totalPoints = 10; break;
-      case 2: totalPoints = 5; break;
-      default: totalPoints = 0;
-    }
+      for (let i = 0; i < 6; i++) {
+        const input = document.getElementById(`input${i}`);
+        const icon = document.getElementById(`icon${i}`);
+        const userAnswer = input.value.trim().toLowerCase();
+        const correct = correctWords[i].toLowerCase();
 
-    // Guardar el puntaje en localStorage
-    let currentScore = parseInt(localStorage.getItem("totalScore")) || 0;
-    localStorage.setItem("totalScore", currentScore + totalPoints);
+        input.classList.remove("correct", "incorrect");
+        icon.textContent = "";
 
-    resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. Final score: <strong>${totalPoints}</strong> points`;
+        if (userAnswer === "") {
+          input.classList.add("incorrect");
+          icon.textContent = "⚠";
+          hasError = true;
+          continue;
+        }
 
-    if (correctCount >= 2) {
+        if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
+          input.classList.add("incorrect");
+          icon.textContent = "❌ Letters only";
+          hasError = true;
+          continue;
+        }
+
+        if (userAnswer === correct) {
+          input.classList.add("correct");
+          icon.textContent = "✅";
+          correctCount++;
+        } else {
+          input.classList.add("incorrect");
+          icon.textContent = "❌";
+        }
+      }
+
+      if (hasError) {
+        resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
+        continueBtn.style.display = "none";
+        return;
+      }
+
+      let totalPoints = 0;
+      switch (correctCount) {
+        case 6: totalPoints = 20; break;
+        case 5: totalPoints = 15; break;
+        case 4: totalPoints = 10; break;
+        case 3: totalPoints = 5; break;
+        case 2: totalPoints = 2; break;
+        case 1: totalPoints = 1; break;
+        default: totalPoints = 0;
+      }
+
+      // Guardar puntaje solo de este nivel, sin acumular total
+      let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+      scores[0] = totalPoints;
+      localStorage.setItem("levelScores", JSON.stringify(scores));
+
+      resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. 
+                             Points this level: <strong>${totalPoints}</strong>`;
+
+      // Deshabilitar botón de enviar para que no envíen más
+      submitBtn.disabled = true;
+      // Deshabilitar inputs para que no puedan seguir escribiendo
+      for (let i = 0; i < 6; i++) {
+        document.getElementById(`input${i}`).disabled = true;
+      }
+
+      // Mostrar botón para continuar
       continueBtn.style.display = "inline-block";
-    } else {
-      continueBtn.style.display = "none";
     }
-  }
 
-  let time = 120;
-  const timerEl = document.getElementById("timer");
-  const countdown = setInterval(() => {
-    const minutes = Math.floor(time / 60);
-    const seconds = time % 60;
-    timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
-    time--;
-    if (time < 0) {
-      clearInterval(countdown);
-      timerEl.textContent = "Time's up!";
-      submitAnswers();
-    }
-  }, 1000);
-</script>
+    // Temporizador
+    let time = 120;
+    const timerEl = document.getElementById("timer");
 
+    const countdown = setInterval(() => {
+      if (time < 0) {
+        clearInterval(countdown);
+        timerEl.textContent = "Time's up!";
+        submitAnswers();
+        return;
+      }
+
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      time--;
+    }, 1000);
+  </script>
 </body>
+
 </html>

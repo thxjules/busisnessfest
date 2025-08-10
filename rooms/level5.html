@@ -168,25 +168,22 @@
   const resetBtn = document.getElementById('resetBtn');
 
   // ===== funciones para puntaje en localStorage =====
-  function saveLevelScore(level, score) {
-    localStorage.setItem(`score_level_${level}`, score);
-    // Recalcular el puntaje total y guardarlo también (la página final puede leer totalScore)
-    let total = 0;
-    for (let i = 1; i <= 6; i++) {
-        total += parseInt(localStorage.getItem(`score_level_${i}`)) || 0;
-    }
-    localStorage.setItem("totalScore", total);
+  function saveLevelScore(level, totalPoints) {
+    let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+    scores[level - 1] = totalPoints;
+    localStorage.setItem("levelScores", JSON.stringify(scores));
+    let currentScore = scores.reduce((acc, val) => acc + (val || 0), 0);
+    localStorage.setItem("totalScore", currentScore);
+    localStorage.setItem("puntajefinal", currentScore);
   }
   // ===== fin funciones puntuación =====
 
-  // Put initial on each back and wire events
   cards.forEach(card=>{
     const ans = (card.dataset.answer||'').trim();
     const normalized = ans.replace(/[\s\-]+/g,'');
     const initial = normalized.charAt(0) ? normalized.charAt(0).toUpperCase() : '?';
     card.querySelector('.initial').textContent = initial;
 
-    // flip on click except when clicking input
     card.addEventListener('click', (e)=>{
       if(e.target.tagName.toLowerCase() === 'input') return;
       card.classList.toggle('flip');
@@ -194,7 +191,6 @@
 
     const input = card.querySelector('input');
     input.addEventListener('click', e=> e.stopPropagation());
-    // Enter moves to next input or triggers check
     input.addEventListener('keydown', (e)=>{
       if(e.key === 'Enter'){
         e.preventDefault();
@@ -220,26 +216,32 @@
     }
   },1000);
 
-  // Normalize helper: remove spaces/hyphens, uppercase
   function normalize(s){
     return (s||'').toString().trim().replace(/[\s\-]+/g,'').toUpperCase();
   }
 
-  // Validation: only letters, spaces and hyphen allowed
   function validInput(s){
     return /^[A-Za-z\s\-]+$/.test(s);
   }
 
+  function disableAll(){
+    cards.forEach(c=>{
+      c.classList.add('flip');
+      c.querySelector('input').disabled = true;
+    });
+    checkBtn.disabled = true;
+    resetBtn.disabled = true;
+  }
+
   function checkAnswers(opts={timeout:false}){
     const timeout = !!opts.timeout;
-    // If not timeout, ensure all filled and valid
+
     if(!timeout){
       for(const c of cards){
         const v = c.querySelector('input').value.trim();
         if(v === '' || !validInput(v)){
           resultEl.style.color = '#b35a00';
           resultEl.textContent = '⚠ Please fill every card with letters only (spaces/hyphens allowed).';
-          // focus first bad
           const bad = cards.find(x=>{ const val=x.querySelector('input').value.trim(); return val==='' || !validInput(val); });
           if(bad) bad.querySelector('input').focus();
           return;
@@ -247,14 +249,9 @@
       }
     }
 
-    // Stop timer, disable inputs, show backs
     clearInterval(timerInterval);
-    cards.forEach(c=>{
-      c.classList.add('flip');
-      c.querySelector('input').disabled = true;
-    });
+    disableAll();
 
-    // Evaluate
     let correct = 0;
     cards.forEach(card=>{
       const user = normalize(card.querySelector('input').value);
@@ -270,23 +267,20 @@
       }
     });
 
-    // Score mapping
     let score = 0;
     switch(correct){
-      case 6: score = 25; break;
-      case 5: score = 20; break;
-      case 4: score = 15; break;
-      case 3: score = 10; break;
-      case 2: score = 5; break;
+      case 6: score = 20; break;
+      case 5: score = 15; break;
+      case 4: score = 10; break;
+      case 3: score = 5; break;
+      case 2: score = 2; break;
       case 1: score = 1; break;
       default: score = 0;
     }
 
-    // show result and create continue button that saves and redirects
     resultEl.style.color = '#0b3';
     resultEl.innerHTML = `✅ Correct: <strong>${correct}</strong> — Score: <strong>${score}</strong> pts.`;
 
-    // create continue button (only once)
     const existing = document.getElementById('continue');
     if(!existing){
       const btn = document.createElement('button');
@@ -299,11 +293,12 @@
       btn.style.background = 'var(--green)';
       btn.style.color = 'white';
       btn.style.cursor = 'pointer';
-      // al hacer click guarda el puntaje de este nivel y va a puntaje_final.html
+
       btn.addEventListener('click', ()=>{
         saveLevelScore(LEVEL, score);
-        window.location.href = 'puntajefinal.html'; // archivo final que muestra total
+        window.location.href = 'puntajefinal.html';
       });
+
       resultEl.appendChild(btn);
     } else {
       existing.onclick = ()=>{
@@ -315,7 +310,6 @@
 
   function resetAll(){
     clearInterval(timerInterval);
-    // reset timer
     timeLeft = 120;
     timerInterval = setInterval(()=>{
       const mm = String(Math.floor(Math.max(0,timeLeft)/60)).padStart(2,'0');
@@ -325,7 +319,6 @@
       if(timeLeft < 0){ clearInterval(timerInterval); resultEl.textContent="⏰ Time's up! Auto-checking..."; checkAnswers({timeout:true}); }
     },1000);
 
-    // clear cards
     cards.forEach(c=>{
       c.classList.remove('flip');
       const ip = c.querySelector('input');
@@ -334,6 +327,8 @@
       ip.classList.remove('ok','bad');
       c.querySelector('.back').classList.remove('ok','wrong');
     });
+    checkBtn.disabled = false;
+    resetBtn.disabled = false;
     resultEl.textContent = '';
   }
 
