@@ -9,72 +9,63 @@
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
-       background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
-    url("../img/image.png") no-repeat center center fixed;
-      color: rgb(231, 240, 235);
+      background: linear-gradient(135deg, #1c5435, #2e7d59);
+      color: white;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
-
     .container {
+      background: rgba(255, 255, 255, 0.1);
       backdrop-filter: blur(8px);
       padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
       width: 90%;
       max-width: 500px;
       text-align: center;
     }
-
     h1 {
       font-size: 2.2rem;
       margin-bottom: 20px;
     }
-
     .table-container {
       overflow-x: auto;
       border-radius: 12px;
       margin-bottom: 20px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      background: rgb(14, 163, 6);
+      background: white;
       color: #333;
       border-radius: 12px;
       overflow: hidden;
     }
-
     th, td {
       padding: 12px;
       border-bottom: 1px solid #ddd;
       text-align: center;
     }
-
     th {
       background: #1c5435;
       color: white;
     }
-
     tfoot td {
       font-weight: bold;
       background: #e6f4ea;
     }
-
     .player-info {
-      background: rgba(28, 122, 59, 0.646);
+      background: rgba(255, 255, 255, 0.15);
       padding: 10px;
-      font-size: bold;
       border-radius: 10px;
       margin-bottom: 20px;
     }
-
     .player-info p {
       margin: 6px 0;
       font-size: 1rem;
     }
-
     button {
       padding: 12px 20px;
       font-size: 1rem;
@@ -82,17 +73,15 @@
       border-radius: 30px;
       margin: 5px;
       cursor: pointer;
-      background: #204826;
-      color: #ffffff;
+      background: #ffcc00;
+      color: #333;
       font-weight: bold;
       transition: all 0.3s ease;
     }
-
     button:hover {
-      background: #1b611d;
+      background: #ffb300;
       transform: scale(1.05);
     }
-
     @media screen and (max-width: 600px) {
       h1 {
         font-size: 1.8rem;
@@ -110,7 +99,7 @@
 <body>
 
   <div class="container">
-    <h1>Final Results</h1>
+    <h1>🏆 Final Results</h1>
 
     <div class="table-container">
       <table>
@@ -132,10 +121,9 @@
 
     <div class="player-info">
       <p><strong>Player:</strong> <span id="playerName"></span></p>
-      <p><strong>Group:</strong> <span id="playerFicha"></span></p>
+      <p><strong>Ficha:</strong> <span id="playerFicha"></span></p>
     </div>
 
-    <button onclick="submit()">Submit</button>
     <button onclick="goHome()">Go to Home</button>
   </div>
 
@@ -158,9 +146,11 @@
     }
     document.getElementById("totalScore").textContent = totalScore;
 
-    const SCRIPT_URL = "TU_URL_DE_GOOGLE_SCRIPT";
+    // URL de tu Google Apps Script endpoint
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDddoSVgwoKdXqzXOKnsI29H5FNvtAABaBAfSw6Dehv9HfSwRfFDPfM0azC6LQIZVKtA/exec";
 
-    function submit() {
+    // Envío automático al cargar la página
+    window.addEventListener("load", () => {
       fetch(SCRIPT_URL, {
         method: 'POST',
         body: JSON.stringify({
@@ -172,13 +162,12 @@
       })
       .then(res => res.text())
       .then(() => {
-        alert("Datos enviados correctamente ✅");
+        console.log("Datos enviados correctamente 👍");
       })
       .catch(err => {
-        console.error(err);
-        alert("Error al enviar los datos ❌");
+        console.error("Error al enviar datos:", err);
       });
-    }
+    });
 
     function goHome() {
       window.location.href = "../home.html";
