@@ -196,7 +196,6 @@
 
     function submitAnswers() {
       let correctCount = 0;
-      let hasError = false;
 
       for (let i = 0; i < correctWords.length; i++) {
         const input = document.getElementById(`input${i}`);
@@ -210,14 +209,12 @@
         if (userAnswer === "") {
           input.classList.add("incorrect");
           icon.textContent = "⚠";
-          hasError = true;
           continue;
         }
 
         if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
           input.classList.add("incorrect");
           icon.textContent = "❌ Letters only";
-          hasError = true;
           continue;
         }
 
@@ -231,25 +228,12 @@
         }
       }
 
-      if (hasError) {
-        resultDiv.innerHTML = "⚠ Please fill all folders with valid words (letters only).";
-        continueBtn.style.display = "none";
-        return false;
-      }
+      // Puntaje proporcional: ronda vale 25 puntos
+      let totalPoints = Math.round((correctCount / correctWords.length) * 25);
 
-      let totalPoints = 0;
-      switch (correctCount) {
-        case 6: totalPoints = 20; break;
-        case 5: totalPoints = 15; break;
-        case 4: totalPoints = 10; break;
-        case 3: totalPoints = 5; break;
-        case 2: totalPoints = 2; break;
-        case 1: totalPoints = 1; break;
-        default: totalPoints = 0;
-      }
-
+      // Guardar puntaje en localStorage
       let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
-      levelScores[2] = totalPoints; 
+      levelScores[2] = totalPoints;
       localStorage.setItem("levelScores", JSON.stringify(levelScores));
 
       resultDiv.innerHTML = `✅ You got <strong>${correctCount}</strong> correct answers.<br>⭐ Points this level: <strong>${totalPoints}</strong>`;
@@ -276,7 +260,6 @@
         clearInterval(countdown);
         timerEl.textContent = "Time's up!";
         submitAnswers();
-        setTimeout(next, 3000);
         return;
       } else {
         const minutes = Math.floor(time / 60);
