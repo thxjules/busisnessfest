@@ -10,7 +10,7 @@
       margin: 0;
       padding: 0;
       background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
-    url("../img/image.png") no-repeat center center fixed;
+      url("../img/image.png") no-repeat center center fixed;
       color: white;
       min-height: 100vh;
       display: flex;
@@ -146,23 +146,23 @@
     }
     document.getElementById("totalScore").textContent = totalScore;
 
-    // URL de tu Google Apps Script endpoint
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx756v4vuu5FMEhMycnmufDX0I4H_HR--Za58Uvc8spCJxpRDYeSyNVOGgm9bEwHyojFg/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygxv09XSn86QA8o1GwWOHUR_5hBnkBKZfsls48QsX3M_PGN-LhKURTDDYz9WUjHfCX/exec";
 
-    // Envío automático al cargar la página
     window.addEventListener("load", () => {
+      console.log("Enviando datos a Google Sheets...");
+
+      const formData = new FormData();
+      formData.append("nombre", jugadorNombre);
+      formData.append("ficha", jugadorFicha);
+      formData.append("puntaje", totalScore);
+
       fetch(SCRIPT_URL, {
         method: 'POST',
-        body: JSON.stringify({
-          nombre: jugadorNombre,
-          ficha: jugadorFicha,
-          puntaje: totalScore
-        }),
-        headers: { 'Content-Type': 'application/json' }
+        body: formData
       })
       .then(res => res.text())
-      .then(() => {
-        console.log("Datos enviados correctamente 👍");
+      .then(data => {
+        console.log("Respuesta del script:", data);
       })
       .catch(err => {
         console.error("Error al enviar datos:", err);
