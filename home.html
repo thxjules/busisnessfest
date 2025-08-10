@@ -17,12 +17,22 @@
     <p class="subtitle">Use your business English to break free...</p>
 
     <div class="buttons">
-      <button onclick="startGame()">Start Game</button>
+      <button onclick="openRegister()">Start Game</button>
       <button onclick="showInstructions()">Instructions</button>
     </div>
   </div>
 
+  <!-- Modal de registro -->
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <h2>Registro de Jugador</h2>
+      <input type="text" id="nombre" placeholder="Tu nombre" required />
+      <input type="text" id="ficha" placeholder="Número de ficha" required />
+      <button class="btn_close" onclick="registerPlayer()">Continuar</button>
+    </div>
+  </div>
 
+  <!-- Modal instrucciones -->
   <div class="modal" id="instructions">
     <div class="modal-content">
       <h2>Instructions</h2>
@@ -33,7 +43,24 @@
   </div>
 
   <script>
-    function startGame() {
+    function openRegister() {
+      document.getElementById("registerModal").style.display = "flex";
+    }
+
+    function registerPlayer() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const ficha = document.getElementById("ficha").value.trim();
+
+      if (!nombre || !ficha) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      // Guardar en localStorage para usarlo luego
+      localStorage.setItem("jugadorNombre", nombre);
+      localStorage.setItem("jugadorFicha", ficha);
+
+      // Ir al juego
       window.location.href = "./rooms/homeL1.html";
     }
 
@@ -44,7 +71,6 @@
     function closeInstructions() {
       document.getElementById("instructions").style.display = "none";
     }
-
   </script>
 </body>
 
