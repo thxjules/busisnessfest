@@ -228,8 +228,7 @@
         }
       }
 
-      // Puntaje proporcional: ronda vale 25 puntos
-      let totalPoints = Math.round((correctCount / correctWords.length) * 25);
+      let totalPoints = Math.round((correctCount / correctWords.length) * 20);
 
       // Guardar puntaje en localStorage
       let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
