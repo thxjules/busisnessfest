@@ -6,6 +6,7 @@
   <meta name="google" content="notranslate">
   <title>Escape Room - Scenario 4</title>
   <style>
+    
     /* Reset básico */
     * {
       box-sizing: border-box;
@@ -185,6 +186,7 @@
         font-size: 1rem;
       }
     }
+  
   </style>
 </head>
 <body>
@@ -263,11 +265,11 @@
       if (savedProgress[i]) {
         const input = document.getElementById(`input${i}`);
         input.value = savedProgress[i];
-        input.classList.add("show"); // Mostrar inputs con texto guardado
+        input.classList.add("show");
       }
     }
 
-    // Guardar progreso en cada input mientras escribe, si no terminó
+    // Guardar progreso mientras escribe
     for (let i = 0; i < 6; i++) {
       document.getElementById(`input${i}`).addEventListener("input", () => {
         if (!gameFinished) {
@@ -330,19 +332,9 @@
         return;
       }
 
-      const scoreTable = {
-        6: 20,
-        5: 15,
-        4: 10,
-        3: 5,
-        2: 2,
-        1: 1,
-        0: 0
-      };
-
+      const scoreTable = { 6: 20, 5: 15, 4: 10, 3: 5, 2: 2, 1: 1, 0: 0 };
       let totalPoints = scoreTable[correctCount] || 0;
 
-      // Guardar puntaje en localStorage
       let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
       levelScores[3] = totalPoints;
       localStorage.setItem("levelScores", JSON.stringify(levelScores));
@@ -353,34 +345,53 @@
       disableInputs();
       continueBtn.style.display = "inline-block";
 
-      // Limpiar progreso guardado porque terminó
       localStorage.removeItem("progress_level4");
-      // Limpiar tiempo guardado porque terminó
       localStorage.removeItem("timeLeft_level4");
-
       gameFinished = true;
     }
 
-    // Recuperar tiempo guardado o usar 120 segundos
+    // Recuperar tiempo o usar 120s
     let time = parseInt(localStorage.getItem("timeLeft_level4"));
     if (isNaN(time) || time < 0) time = 120;
     const timerEl = document.getElementById("timer");
+
     const countdown = setInterval(() => {
-      if(time < 0){
+      if (time < 0) {
         clearInterval(countdown);
         timerEl.textContent = "Time's up!";
-        submitAnswers();
+        disableInputs();
+
+        // Verificar si todos están vacíos
+        let allEmpty = true;
+        for (let i = 0; i < 6; i++) {
+          if (document.getElementById(`input${i}`).value.trim() !== "") {
+            allEmpty = false;
+            break;
+          }
+        }
+
+        if (allEmpty) {
+          // Pasar directo al siguiente nivel
+          setTimeout(() => {
+            localStorage.removeItem("progress_level4");
+            localStorage.removeItem("timeLeft_level4");
+            window.location.href = "./homeL5.html";
+          }, 1000);
+        } else {
+          // Evaluar respuestas
+          submitAnswers();
+        }
         return;
       }
+
       const minutes = Math.floor(time / 60);
       const seconds = time % 60;
       timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
       time--;
-      // Guardar tiempo restante
       localStorage.setItem("timeLeft_level4", time);
     }, 1000);
 
-    // Confirmar antes de cerrar o recargar si no terminó
+    // Confirmar antes de cerrar
     window.addEventListener('beforeunload', function(e) {
       if (!gameFinished) {
         e.preventDefault();

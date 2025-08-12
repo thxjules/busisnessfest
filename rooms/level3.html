@@ -5,105 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="google" content="notranslate">
   <title>Escape Room - Scenario 3</title>
+  <link rel="stylesheet" href="../css/homeL1.css">
   <style>
-    body {
-      background: linear-gradient(135deg, #14270f, #204327, #2c6445);
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-    }
     .container {
       max-width: 900px;
       margin: auto;
       padding: 20px;
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.5);
-    }
-    h1 {
-      text-align: center;
-      font-size: 2.2rem;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-    p {
-      font-size: 1.1rem;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-    #timer {
-      font-weight: bold;
-      color: #ff4b2b;
-    }
-    .folder {
-      background: rgba(255,255,255,0.08);
-      padding: 15px;
-      margin: 15px 0;
-      border-radius: 10px;
-      transition: transform 0.2s ease;
-    }
-    .folder:hover {
-      transform: scale(1.02);
-      background: rgba(255,255,255,0.12);
     }
     input[type="text"] {
       width: 100%;
       max-width: 300px;
       margin-top: 5px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-      font-size: 1rem;
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      transition: 0.3s;
-    }
-    input[type="text"]:focus {
-      background: rgba(255,255,255,0.3);
-      box-shadow: 0 0 10px #ff4b2b;
-    }
-    input.correct {
-      border: 2px solid #00ff88;
-    }
-    input.incorrect {
-      border: 2px solid #ff4b2b;
-    }
-    .icon-result {
-      margin-left: 10px;
-      font-weight: bold;
     }
     button {
-      display: block;
-      margin: 20px auto;
-      padding: 12px 25px;
-      font-size: 1.1rem;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: 0.3s;
-      font-weight: bold;
-    }
-    #submit-btn {
-      background: linear-gradient(45deg, #ff4b2b, #ff416c);
-      color: #fff;
-    }
-    #submit-btn:hover {
-      transform: scale(1.05);
-    }
-    #continue-btn {
-      background: linear-gradient(45deg, #5ba55b, #5bbd6d);
-      color: #fff;
-    }
-    #continue-btn:hover {
-      transform: scale(1.05);
-    }
-    #result {
-      text-align: center;
       margin-top: 10px;
-      font-size: 1.1rem;
     }
     @media (max-width: 600px) {
       h1 {
@@ -121,16 +36,16 @@
 <body>
   <section class="Welcome">
     <div class="container">
-      <h1>🗺 The Map of Decisions</h1>
-      <p>You’ve entered the <strong>Business Analysis Room</strong>. Match each clue with the correct concept in English.</p>
+      <h1>The Map of Decisions</h1>
+      <p>You’ve entered the Business Analysis Room. Match each clue with the correct concept in English.</p>
       <p>You have <span id="timer">02:00</span> minutes.</p>
       <p>No fields can be left blank.</p>
 
       <div id="folders-container"></div>
 
-      <button onclick="submitAnswers()" id="submit-btn">🔓 Unlock</button>
+      <button onclick="submitAnswers()" id="submit-btn">Unlock</button>
       <div id="result"></div>
-      <button id="continue-btn" onclick="next()" style="display:none;">➡ Continue</button>
+      <button id="continue-btn" onclick="next()" style="display:none;">Continue</button>
     </div>
   </section>
 
@@ -159,6 +74,7 @@
 
     const folderContainer = document.getElementById("folders-container");
 
+    // Crear inputs y cargar progreso guardado si existe
     for (let i = 0; i < folderHints.length; i++) {
       const div = document.createElement("div");
       div.className = "folder";
@@ -171,7 +87,9 @@
       folderContainer.appendChild(div);
     }
 
+    // Recuperar progreso guardado (array de respuestas)
     let savedProgress = JSON.parse(localStorage.getItem("progress_level3")) || [];
+    // Llenar inputs con progreso si hay
     for (let i = 0; i < correctWords.length; i++) {
       if (savedProgress[i]) {
         document.getElementById(`input${i}`).value = savedProgress[i];
@@ -184,6 +102,7 @@
 
     let gameFinished = false;
 
+    // Guardar cambios en inputs en localStorage
     for (let i = 0; i < correctWords.length; i++) {
       document.getElementById(`input${i}`).addEventListener("input", () => {
         if (!gameFinished) {
@@ -198,6 +117,7 @@
 
     function submitAnswers() {
       let correctCount = 0;
+      let hasError = false;
 
       for (let i = 0; i < correctWords.length; i++) {
         const input = document.getElementById(`input${i}`);
@@ -211,12 +131,14 @@
         if (userAnswer === "") {
           input.classList.add("incorrect");
           icon.textContent = "⚠";
+          hasError = true;
           continue;
         }
 
         if (!/^[a-zA-Z\s]+$/.test(userAnswer)) {
           input.classList.add("incorrect");
           icon.textContent = "❌ Letters only";
+          hasError = true;
           continue;
         }
 
@@ -230,28 +152,49 @@
         }
       }
 
-      let totalPoints = Math.round((correctCount / correctWords.length) * 20);
+      if (hasError) {
+        resultDiv.innerHTML = "Please fill all folders with valid words (letters only).";
+        continueBtn.style.display = "none";
+        return false;
+      }
+
+      let totalPoints = 0;
+      switch (correctCount) {
+        case 6: totalPoints = 20; break;
+        case 5: totalPoints = 15; break;
+        case 4: totalPoints = 10; break;
+        case 3: totalPoints = 5; break;
+        case 2: totalPoints = 2; break;
+        case 1: totalPoints = 1; break;
+        default: totalPoints = 0;
+      }
 
       // Guardar puntaje en localStorage
       let levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
-      levelScores[2] = totalPoints;
+      levelScores[2] = totalPoints; 
       localStorage.setItem("levelScores", JSON.stringify(levelScores));
 
-      resultDiv.innerHTML = `✅ You got <strong>${correctCount}</strong> correct answers.<br>⭐ Points this level: <strong>${totalPoints}</strong>`;
+      resultDiv.innerHTML = `You got <strong>${correctCount}</strong> correct answers. 
+                             Points this level: <strong>${totalPoints}</strong>`;
 
+      // Deshabilitar inputs y botón para evitar más respuestas
       for (let i = 0; i < correctWords.length; i++) {
         document.getElementById(`input${i}`).disabled = true;
       }
       submitBtn.disabled = true;
 
+      // Limpiar progreso guardado porque terminó
       localStorage.removeItem("progress_level3");
+      // Limpiar tiempo guardado porque terminó
       localStorage.removeItem("timeLeft_level3");
 
       gameFinished = true;
+
       continueBtn.style.display = "inline-block";
       return true;
     }
 
+    // Recuperar tiempo guardado o usar 120 segundos
     let time = parseInt(localStorage.getItem("timeLeft_level3"));
     if (isNaN(time) || time < 0) time = 120;
     const timerEl = document.getElementById("timer");
@@ -260,17 +203,25 @@
       if (time < 0) {
         clearInterval(countdown);
         timerEl.textContent = "Time's up!";
+
+        // Llamar submitAnswers para mostrar resultado y bloquear inputs
         submitAnswers();
+
+        // Avanzar automáticamente después de 3 segundos
+        setTimeout(next, 3000);
+
         return;
       } else {
         const minutes = Math.floor(time / 60);
         const seconds = time % 60;
         timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
         time--;
+        // Guardar tiempo restante
         localStorage.setItem("timeLeft_level3", time);
       }
     }, 1000);
 
+    // Confirmar antes de salir o recargar si no terminó el juego
     window.addEventListener('beforeunload', function(e) {
       if (!gameFinished) {
         e.preventDefault();
