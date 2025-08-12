@@ -3,89 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Final Score with Name and ID</title>
+  <title>Final Score</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 20px;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
+      url("../img/image.png") no-repeat center center fixed;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      backdrop-filter: blur(8px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+      width: 90%;
+      max-width: 500px;
       text-align: center;
     }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
     table {
-      margin: 20px auto;
+      width: 100%;
       border-collapse: collapse;
       background: white;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: #333;
+      border-radius: 12px;
+      overflow: hidden;
     }
     th, td {
-      border: 1px solid #ccc;
-      padding: 12px 20px;
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
       text-align: center;
     }
     th {
-      background: #4CAF50;
+      background: #1c5435;
       color: white;
     }
-    input {
+    tfoot td {
+      font-weight: bold;
+      background: #e6f4ea;
+    }
+    .player-info {
+      background: rgba(255, 255, 255, 0.15);
       padding: 10px;
-      margin: 10px 5px;
-      width: 250px;
-      font-size: 16px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .player-info p {
+      margin: 6px 0;
+      font-size: 1rem;
     }
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background: #4CAF50;
+      padding: 12px 20px;
+      font-size: 1rem;
       border: none;
-      color: white;
-      border-radius: 5px;
+      border-radius: 30px;
+      margin: 5px;
       cursor: pointer;
-      margin-top: 15px;
-      margin-right: 10px;
+      background: #0e6518;
+      color: #ffffff;
+      font-weight: bold;
+      transition: all 0.3s ease;
     }
     button:hover {
-      background: #45a049;
+      background: #077217;
+      transform: scale(1.05);
+    }
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      th, td {
+        font-size: 0.9rem;
+      }
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <h1>🏆 Final Results</h1>
+  <div class="container">
+    <h1>Final Results</h1>
 
-  <table>
-    <thead>
-      <tr>
-        <th>Scenario</th>
-        <th>Points</th>
-      </tr>
-    </thead>
-    <tbody id="scoreTable"></tbody>
-    <tfoot>
-      <tr style="font-weight:bold; background:#ddd;">
-        <td>Final Score</td>
-        <td id="totalScore">0</td>
-      </tr>
-    </tfoot>
-  </table>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="scoreTable"></tbody>
+        <tfoot>
+          <tr>
+            <td>Final Score</td>
+            <td id="totalScore">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
 
-  <div>
-    <input type="text" id="fullName" placeholder="Write your full name" />
-    <input type="text" id="ficha" placeholder="Write your ficha" />
-  </div>
+    <div class="player-info">
+      <p><strong>Player:</strong> <span id="playerName"></span></p>
+      <p><strong>Ficha:</strong> <span id="playerFicha"></span></p>
+    </div>
 
-  <div>
-    <button onclick="submit()">Submit</button>
     <button onclick="goHome()">Go to Home</button>
   </div>
 
   <script>
-    // Mostrar puntajes desde localStorage
+    const jugadorNombre = localStorage.getItem("jugadorNombre") || "Sin nombre";
+    const jugadorFicha = localStorage.getItem("jugadorFicha") || "Sin ficha";
+    document.getElementById("playerName").textContent = jugadorNombre;
+    document.getElementById("playerFicha").textContent = jugadorFicha;
+
     const levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
     const maxScenarios = 5;
     const escenariosAMostrar = Math.min(levelScores.length, maxScenarios);
-
     const totalScore = levelScores.slice(0, maxScenarios).reduce((a,b) => a + (b || 0), 0);
 
     const scoreTableBody = document.getElementById("scoreTable");
@@ -96,24 +146,31 @@
     }
     document.getElementById("totalScore").textContent = totalScore;
 
-    function submit() {
-      const fullName = document.getElementById("fullName").value.trim();
-      const ficha = document.getElementById("ficha").value.trim();
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygxv09XSn86QA8o1GwWOHUR_5hBnkBKZfsls48QsX3M_PGN-LhKURTDDYz9WUjHfCX/exec";
 
-      if (!fullName) {
-        alert("Please enter your full name.");
-        return;
-      }
-      if (!ficha) {
-        alert("Please enter your ficha.");
-        return;
-      }
+    window.addEventListener("load", () => {
+      console.log("Enviando datos a Google Sheets...");
 
-      alert(`Thank you, ${fullName}! Your ficha is ${ficha}.\nYour total score is ${totalScore}.`);
-    }
+      const formData = new FormData();
+      formData.append("nombre", jugadorNombre);
+      formData.append("ficha", jugadorFicha);
+      formData.append("puntaje", totalScore);
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+      })
+      .then(res => res.text())
+      .then(data => {
+        console.log("Respuesta del script:", data);
+      })
+      .catch(err => {
+        console.error("Error al enviar datos:", err);
+      });
+    });
 
     function goHome() {
-      window.location.href = "../home.html"; // Cambia la ruta si es necesario
+      window.location.href = "../home.html";
     }
   </script>
 
