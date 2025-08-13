@@ -134,7 +134,7 @@
     document.getElementById("playerFicha").textContent = jugadorFicha;
 
     const levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
-    const maxScenarios = 5;
+    const maxScenarios = 3;
     const escenariosAMostrar = Math.min(levelScores.length, maxScenarios);
     const totalScore = levelScores.slice(0, maxScenarios).reduce((a,b) => a + (b || 0), 0);
 
