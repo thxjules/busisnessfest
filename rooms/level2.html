@@ -253,7 +253,7 @@
 
         // --- Guardar puntaje acumulado ---
         let currentScore = parseInt(localStorage.getItem("totalScore")) || 0;
-        let pointsThisLevel = 20; // 20 puntos si es correcto
+        let pointsThisLevel = 40;
         currentScore += pointsThisLevel;
         localStorage.setItem("totalScore", currentScore);
 
