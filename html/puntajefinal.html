@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Final Score</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
+        url("../img/image.png") no-repeat center center fixed;
+      color: white;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      backdrop-filter: blur(8px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 500px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 20px;
+    }
+
+    .table-container {
+      overflow-x: auto;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      color: #333;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+    }
+
+    th {
+      background: #1c5435;
+      color: white;
+    }
+
+    tfoot td {
+      font-weight: bold;
+      background: #e6f4ea;
+    }
+
+    .player-info {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .player-info p {
+      margin: 6px 0;
+      font-size: 1rem;
+    }
+
+    button {
+      padding: 12px 20px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 30px;
+      margin: 5px;
+      cursor: pointer;
+      background: #0e6518;
+      color: #ffffff;
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    button:hover {
+      background: #077217;
+      transform: scale(1.05);
+    }
+
+    @media screen and (max-width: 600px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+
+      th,
+      td {
+        font-size: 0.9rem;
+      }
+
+      button {
+        width: 100%;
+        margin-top: 10px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Final Results</h1>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Scenario</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody id="scoreTable"></tbody>
+        <tfoot>
+          <tr>
+            <td>Final Score</td>
+            <td id="totalScore">0</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="player-info">
+      <img id="player-avatar" class="avatar-img" alt="Player Avatar" width="120" height="120">
+      <p id="player-name"></p>
+    </div>
+
+    <button onclick="goHome()">Go to Home</button>
+  </div>
+
+  <script>
+    // Recuperar info del jugador
+    const avatar = localStorage.getItem("jugadorAvatar");
+    const nombre = localStorage.getItem("jugadorNombre");
+    const rol = localStorage.getItem("jugadorRol");
+    const ficha = localStorage.getItem("jugadorFicha");
+
+    if (avatar) document.getElementById("player-avatar").src = avatar.startsWith("../") ? avatar : "../" + avatar;
+    if (nombre && rol) document.getElementById("player-name").textContent = `${nombre} – ${rol}`;
+
+    // Recuperar puntajes de los niveles
+    const levelScores = JSON.parse(localStorage.getItem("levelScores")) || [];
+
+    const scoreTableBody = document.getElementById("scoreTable");
+
+    // Mostrar los puntajes
+    levelScores.forEach((score, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>Scenario ${index + 1}</td><td>${score}</td>`;
+      scoreTableBody.appendChild(tr);
+    });
+
+    // Rellenar hasta 3 escenarios si faltan
+    for (let i = levelScores.length; i < 3; i++) {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>Scenario ${i + 1}</td><td>0</td>`;
+      scoreTableBody.appendChild(tr);
+    }
+
+    // Calcular puntaje total
+    const totalScore = levelScores.reduce((sum, score) => sum + score, 0);
+    document.getElementById("totalScore").textContent = totalScore;
+
+    // Enviar puntaje a Google Sheets
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygxv09XSn86QA8o1GwWOHUR_5hBnkBKZfsls48QsX3M_PGN-LhKURTDDYz9WUjHfCX/exec";
+
+    window.addEventListener("load", () => {
+      console.log("Enviando datos a Google Sheets...");
+
+      const formData = new FormData();
+      formData.append("nombre", nombre || "Desconocido");
+      formData.append("ficha", ficha || "sin ficha");
+      formData.append("puntaje", totalScore);
+
+      fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+      })
+        .then(res => res.ok ? res.text() : Promise.reject(res.statusText))
+        .then(data => console.log("Respuesta del script:", data))
+        .catch(err => console.error("Error al enviar datos:", err));
+    });
+
+    function goHome() {
+      window.location.href = "./home.html";
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,52 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
+    url("../img/fondo4.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+.sena {
+  display: flex;
+  position: initial;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.container {
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-style: italic;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.buttons button {
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background-color: #1c5435;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #416b46;
+}

@@ -1,0 +1,132 @@
+body {
+  background-color: #000;
+  color: #cdf8d2;
+  text-align: center;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.player-info {
+  margin: 20px;
+}
+
+.avatar-img {
+  border-radius: 50%;
+  border: 2px solid #cdf8d2;
+  margin-bottom: 10px;
+  max-width: 100px;
+}
+
+#player-name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.puzzle-container {
+  display: grid;
+  grid-template-columns: repeat(2, 150px);
+  grid-template-rows: repeat(2, 150px);
+  justify-content: center;
+  gap: 10px;
+  margin: 20px auto;
+}
+
+.pieces-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px;
+}
+
+.dropzone {
+  width: 150px;
+  height: 150px;
+  border: 2px dashed white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.piece {
+  width: 150px;
+  height: 150px;
+  cursor: grab;
+}
+
+textarea,
+#phrase-input {
+  width: 90%;
+  max-width: 400px;
+  height: 80px;
+  margin: 15px auto;
+  display: block;
+  font-size: 1rem;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #1f7a3d;
+  color: #fff;
+  cursor: pointer;
+}
+
+button:disabled {
+  background-color: #444;
+  cursor: not-allowed;
+}
+
+/* ======== RESPONSIVE ======== */
+@media (max-width: 445px) {
+  .puzzle-container {
+    grid-template-columns: repeat(2, 100px);
+    grid-template-rows: repeat(2, 100px);
+    gap: 8px;
+  }
+
+  .dropzone,
+  .piece {
+    width: 100px;
+    height: 100px;
+  }
+
+  .pieces-container {
+    gap: 8px;
+  }
+
+  #player-name {
+    font-size: 1rem;
+  }
+
+  button {
+    width: 90%;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .puzzle-container {
+    grid-template-columns: repeat(2, 90px);
+    grid-template-rows: repeat(2, 90px);
+    gap: 6px;
+  }
+
+  .dropzone,
+  .piece {
+    width: 90px;
+    height: 90px;
+  }
+
+  textarea,
+  #phrase-input {
+    font-size: 0.9rem;
+    height: 70px;
+  }
+}

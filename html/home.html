@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape the Office</title>
+  <link rel="stylesheet" href="../css/home.css" />
+</head>
+
+<body>
+  <div class="sena">
+    <img src="../img/sena.png" alt="sena" height="150px" width="150px">
+  </div>
+  <div class="container">
+    <h1>Escape the Office</h1>
+    <p class="subtitle">Use your business English to break free...</p>
+
+    <div class="buttons">
+      <button onclick="openRegister()">Start Game</button>
+      <button onclick="showInstructions()">Instructions</button>
+    </div>
+  </div>
+
+  <!-- Modal de registro -->
+  <div class="modal" id="registerModal">
+    <div class="modal-content">
+      <h2>Player Register</h2>
+      <input type="text" id="nombre" placeholder="Your Fullname" required />
+      <input type="text" id="ficha" placeholder="Number of group" required />
+
+      <h3>Choose your Avatar</h3>
+      <div class="avatars">
+        <label>
+          <!-- Ojo aquí: value sin ../ -->
+          <input type="radio" name="avatar" value="img/avatar1.png" data-role="The CEO" required>
+          <img src="../img/avatar1.png" alt="The CEO" class="avatar-img">
+          <p>The CEO</p>
+        </label>
+        <label>
+          <input type="radio" name="avatar" value="img/avatar2.png" data-role="The Analyst">
+          <img src="../img/avatar2.png" alt="The Analyst" class="avatar-img">
+          <p>The Analyst</p>
+        </label>
+        <label>
+          <input type="radio" name="avatar" value="img/avatar3.png" data-role="The Negotiator">
+          <img src="../img/avatar3.png" alt="The Negotiator" class="avatar-img">
+          <p>The Negotiator</p>
+        </label>
+      </div>
+
+      <button class="btn_close" onclick="registerPlayer()">Play</button>
+    </div>
+  </div>
+
+  <!-- Modal instrucciones -->
+  <div class="modal" id="instructions">
+    <div class="modal-content">
+      <h2>Instructions</h2>
+      <p>You are trapped in a virtual office. Solve business English writing challenges to escape each room. Use the
+        required words in your answers to move forward.</p>
+      <button class="btn_close" onclick="closeInstructions()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function openRegister() {
+      document.getElementById("registerModal").style.display = "flex";
+    }
+
+    function registerPlayer() {
+      const nombre = document.getElementById("nombre").value.trim();
+      const ficha = document.getElementById("ficha").value.trim();
+      const avatar = document.querySelector('input[name="avatar"]:checked');
+
+      if (!nombre || !ficha || !avatar) {
+        alert("Please complete all and select one avatar.");
+        return;
+      }
+
+      localStorage.setItem("jugadorNombre", nombre);
+      localStorage.setItem("jugadorFicha", ficha);
+      localStorage.setItem("jugadorAvatar", avatar.value);
+      localStorage.setItem("jugadorRol", avatar.dataset.role);
+
+      window.location.href = "./homeL1.html";
+    }
+
+    function showInstructions() {
+      document.getElementById("instructions").style.display = "flex";
+    }
+
+    function closeInstructions() {
+      document.getElementById("instructions").style.display = "none";
+    }
+  </script>
+</body>
+
+</html>

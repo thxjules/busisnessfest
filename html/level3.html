@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="google" content="notranslate">
+    <title>Level 3 –</title>
+    <link rel="stylesheet" href="../css/level3.css">
+</head>
+
+<body>
+    <div class="wrap">
+        <h1>Level 3 — the future lab</h1>
+        <p class="lead"><em>"Progress Depends on Action"</em> — HOVER / TAP CARDS TO FLIP. EACH BACK SHOWS THE INITIAL
+            AND AN INPUT.</p>
+        <p>No fields can be left blank.</p>
+
+        <div id="infoRow">
+            <div id="timer">Time left: 04:00</div>
+        </div>
+
+        <div class="grid" id="cards">
+
+            <div class="card" data-answer="POST-EXECUTION">
+                <div class="card-inner">
+                    <div class="side front">What comes after finishing a project.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">What comes after finishing a project.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-answer="TIMEFRAME">
+                <div class="card-inner">
+                    <div class="side front">A deadline to complete a mission.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">A deadline to complete a mission.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-answer="MOVE FORWARD">
+                <div class="card-inner">
+                    <div class="side front">Taking steps after a failure.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">Taking steps after a failure.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-answer="WORK SPACE">
+                <div class="card-inner">
+                    <div class="side front">The physical environment that inspires focus.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">The physical environment that inspires focus.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-answer="ENCOURAGE">
+                <div class="card-inner">
+                    <div class="side front">Empowering others to keep trying.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">Empowering others to keep trying.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" data-answer="LEADERSHIP">
+                <div class="card-inner">
+                    <div class="side front">The ability to lead during change.</div>
+                    <div class="side back">
+                        <div class="initial"></div>
+                        <div class="hint">The ability to lead during change.</div>
+                        <input type="text" autocomplete="off" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="controls">
+            <button class="primary" id="checkBtn">Check Answers</button>
+            <button class="ghost" id="resetBtn">Reset</button>
+        </div>
+
+        <div id="result" aria-live="polite"></div>
+    </div>
+
+    <script>
+        (function () {
+            const LEVEL = 3;
+            const cards = Array.from(document.querySelectorAll('.card'));
+            const timerEl = document.getElementById('timer');
+            const resultEl = document.getElementById('result');
+            const checkBtn = document.getElementById('checkBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            let gameFinished = false;
+
+            // ===== funciones para puntaje en localStorage =====
+            function saveLevelScore(level, totalPoints) {
+                let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+                scores[level - 1] = totalPoints;
+                localStorage.setItem("levelScores", JSON.stringify(scores));
+                let currentScore = scores.reduce((acc, val) => acc + (val || 0), 0);
+                localStorage.setItem("totalScore", currentScore);
+                localStorage.setItem("puntajefinal", currentScore);
+            }
+            // ===== fin funciones puntuación =====
+
+            cards.forEach((card, index) => {
+                const ans = (card.dataset.answer || '').trim();
+                const normalized = ans.replace(/[\s\-]+/g, '');
+                const initial = normalized.charAt(0) ? normalized.charAt(0).toUpperCase() : '?';
+                card.querySelector('.initial').textContent = initial;
+
+                card.addEventListener('click', (e) => {
+                    if (e.target.tagName.toLowerCase() === 'input') return;
+                    card.classList.toggle('flip');
+                });
+
+                const input = card.querySelector('input');
+                input.addEventListener('click', e => e.stopPropagation());
+
+                const savedProgress = JSON.parse(localStorage.getItem('progress_level3')) || [];
+                if (savedProgress[index]) {
+                    input.value = savedProgress[index];
+                    card.classList.add('flip');
+                }
+
+                input.addEventListener('input', () => {
+                    if (!gameFinished) {
+                        let currentProgress = [];
+                        cards.forEach(c => currentProgress.push(c.querySelector('input').value));
+                        localStorage.setItem('progress_level3', JSON.stringify(currentProgress));
+                    }
+                });
+
+                input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const nextCard = cards[index + 1];
+                        if (nextCard) {
+                            nextCard.classList.add('flip');
+                            nextCard.querySelector('input').focus();
+                        } else {
+                            checkAnswers();
+                        }
+                    }
+                });
+            });
+
+            // Recuperar tiempo guardado o usar 240 segundos (4 minutos)
+            let timeLeft = parseInt(localStorage.getItem('timeLeft_level3'));
+            if (isNaN(timeLeft) || timeLeft < 0) timeLeft = 240;
+
+            // Timer
+            let timerInterval = setInterval(() => {
+                const mm = String(Math.floor(Math.max(0, timeLeft) / 60)).padStart(2, '0');
+                const ss = String(Math.max(0, timeLeft) % 60).padStart(2, '0');
+                timerEl.textContent = `Time left: ${mm}:${ss}`;
+                timeLeft--;
+                localStorage.setItem('timeLeft_level3', timeLeft);
+
+                if (timeLeft < 0) {
+                    clearInterval(timerInterval);
+                    resultEl.textContent = "⏰ Time's up! Auto-checking answers...";
+                    checkAnswers({ timeout: true });
+                }
+            }, 1000);
+
+            function normalize(s) {
+                return (s || '').toString().trim().replace(/[\s\-]+/g, '').toUpperCase();
+            }
+
+            function validInput(s) {
+                return /^[A-Za-z\s\-]+$/.test(s);
+            }
+
+            function disableAll() {
+                cards.forEach(c => {
+                    c.classList.add('flip');
+                    c.querySelector('input').disabled = true;
+                });
+                checkBtn.disabled = true;
+                resetBtn.disabled = true;
+            }
+
+            function checkAnswers(opts = { timeout: false }) {
+                const timeout = !!opts.timeout;
+
+                if (!timeout) {
+                    for (const c of cards) {
+                        const v = c.querySelector('input').value.trim();
+                        if (v === '' || !validInput(v)) {
+                            resultEl.style.color = '#b35a00';
+                            resultEl.textContent = '⚠ Please fill every card with letters only (spaces/hyphens allowed).';
+                            const bad = cards.find(x => { const val = x.querySelector('input').value.trim(); return val === '' || !validInput(val); });
+                            if (bad) bad.querySelector('input').focus();
+                            return;
+                        }
+                    }
+                }
+
+                clearInterval(timerInterval);
+                disableAll();
+
+                let correct = 0;
+                cards.forEach(card => {
+                    const user = normalize(card.querySelector('input').value);
+                    const expected = normalize(card.dataset.answer);
+                    const inputEl = card.querySelector('input');
+                    if (user === expected) {
+                        inputEl.classList.add('ok');
+                        inputEl.classList.remove('bad');
+                        correct++;
+                    } else {
+                        inputEl.classList.add('bad');
+                        inputEl.classList.remove('ok');
+                    }
+                });
+
+                let score = 0;
+                switch (correct) {
+                    case 6: score = 20; break;
+                    case 5: score = 15; break;
+                    case 4: score = 10; break;
+                    case 3: score = 5; break;
+                    case 2: score = 2; break;
+                    case 1: score = 1; break;
+                    default: score = 0;
+                }
+
+                resultEl.style.color = '#0b3';
+                resultEl.innerHTML = `✅ Correct: <strong>${correct}</strong> — Score: <strong>${score}</strong> pts.`;
+
+                const existing = document.getElementById('continue');
+                if (!existing) {
+                    const btn = document.createElement('button');
+                    btn.id = 'continue';
+                    btn.textContent = 'Continue to Final Score';
+                    btn.style.marginLeft = '12px';
+                    btn.style.padding = '6px 10px';
+                    btn.style.borderRadius = '6px';
+                    btn.style.border = 'none';
+                    btn.style.background = 'var(--green)';
+                    btn.style.color = 'white';
+                    btn.style.cursor = 'pointer';
+
+                    btn.addEventListener('click', () => {
+                        saveLevelScore(LEVEL, score);
+                        localStorage.removeItem('progress_level3');
+                        localStorage.removeItem('timeLeft_level3');
+                        gameFinished = true;
+                        window.location.href = 'puntajefinal.html';
+                    });
+
+                    resultEl.appendChild(btn);
+                } else {
+                    existing.onclick = () => {
+                        saveLevelScore(LEVEL, score);
+                        localStorage.removeItem('progress_level3');
+                        localStorage.removeItem('timeLeft_level3');
+                        gameFinished = true;
+                        window.location.href = 'puntajefinal.html';
+                    };
+                }
+            }
+
+            function resetAll() {
+                clearInterval(timerInterval);
+                timeLeft = 240;
+                localStorage.removeItem('timeLeft_level3');
+                timerInterval = setInterval(() => {
+                    const mm = String(Math.floor(Math.max(0, timeLeft) / 60)).padStart(2, '0');
+                    const ss = String(Math.max(0, timeLeft) % 60).padStart(2, '0');
+                    timerEl.textContent = `Time left: ${mm}:${ss}`;
+                    timeLeft--;
+                    localStorage.setItem('timeLeft_level3', timeLeft);
+                    if (timeLeft < 0) {
+                        clearInterval(timerInterval);
+                        resultEl.textContent = "⏰ Time's up! Auto-checking...";
+                        checkAnswers({ timeout: true });
+                    }
+                }, 1000);
+
+                cards.forEach(c => {
+                    c.classList.remove('flip');
+                    const ip = c.querySelector('input');
+                    ip.disabled = false;
+                    ip.value = '';
+                    ip.classList.remove('ok', 'bad');
+                });
+                checkBtn.disabled = false;
+                resetBtn.disabled = false;
+                resultEl.textContent = '';
+                localStorage.removeItem('progress_level3');
+                gameFinished = false;
+            }
+
+            window.addEventListener('beforeunload', function (e) {
+                if (!gameFinished) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            checkBtn.addEventListener('click', () => checkAnswers({ timeout: false }));
+            resetBtn.addEventListener('click', resetAll);
+        })();
+    </script>
+</body>
+
+</html>

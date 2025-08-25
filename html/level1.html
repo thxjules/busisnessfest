@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escape Room - Level 1</title>
+  <link rel="stylesheet" href="../css/level1.css">
+</head>
+<body>
+  <div class="player-info">
+    <img id="player-avatar" class="avatar-img" alt="Player Avatar" width="120" height="120">
+    <p id="player-name"></p>
+  </div>
+
+  <section class="level1">
+    <h1>Complete the sentence</h1>
+    <p>Complete the puzzle (5 points) and write the hidden phrase (15 points).</p>
+    <p>You have <span id="timer">02:00</span> minutes.</p>
+
+    <div class="game">
+      <!-- Puzzle -->
+      <div class="puzzle-container">
+        <div class="dropzone" data-piece="1"></div>
+        <div class="dropzone" data-piece="2"></div>
+        <div class="dropzone" data-piece="3"></div>
+        <div class="dropzone" data-piece="4"></div>
+      </div>
+
+      <div class="pieces-container">
+        <img src="../img/pieza1.png" class="piece" alt="pieza1" draggable="true" data-piece="1">
+        <img src="../img/pieza2.png" class="piece" alt="pieza2" draggable="true" data-piece="2">
+        <img src="../img/pieza3.png" class="piece" alt="pieza3" draggable="true" data-piece="3">
+        <img src="../img/pieza4.png" class="piece" alt="pieza4" draggable="true" data-piece="4">
+      </div>
+    </div>
+
+    <!-- Phrase -->
+    <div class="phrase-container">
+      <p>Type the hidden phrase (English only):</p>
+      <input type="text" id="phrase-input" placeholder="Write here...">
+    </div>
+
+    <button id="submit-btn" onclick="submitLevel()">Submit</button>
+    <div id="result"></div>
+    <button id="continue-btn" style="display:none;" onclick="next()">Continue</button>
+  </section>
+
+  <script>
+    // ===== Avatar, Nombre y Rol =====
+    const avatar = localStorage.getItem("jugadorAvatar");
+    const nombre = localStorage.getItem("jugadorNombre");
+    const rol = localStorage.getItem("jugadorRol");
+
+    if (avatar) {
+      document.getElementById("player-avatar").src = "../" + avatar;
+    }
+    if (nombre && rol) {
+      document.getElementById("player-name").textContent = `${nombre} – ${rol}`;
+    }
+
+    // ===== PUZZLE =====
+    const pieces = document.querySelectorAll('.piece');
+    const dropzones = document.querySelectorAll('.dropzone');
+    let placedPieces = 0;
+
+    pieces.forEach(piece => {
+      piece.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('piece', piece.dataset.piece);
+      });
+    });
+
+    dropzones.forEach(zone => {
+      zone.addEventListener('dragover', e => e.preventDefault());
+      zone.addEventListener('drop', e => {
+        e.preventDefault();
+        const pieceId = e.dataTransfer.getData('piece');
+        if (zone.dataset.piece === pieceId && !zone.hasChildNodes()) {
+          const piece = document.querySelector(`.piece[data-piece="${pieceId}"]`);
+          zone.appendChild(piece);
+          placedPieces++;
+        }
+      });
+    });
+
+    const correctPhrase = "business english unlocks success";
+
+    // ===== VALIDACIÓN Y PUNTAJE =====
+    let gameFinished = false;
+    function submitLevel() {
+      if (gameFinished) return;
+
+      let totalPoints = 0;
+      let puzzlePoints = 0;
+      let phrasePoints = 0;
+
+      // Puzzle completo = 5 puntos
+      if (placedPieces === 4) {
+        puzzlePoints = 5;
+      }
+
+      // Frase validada = hasta 15 puntos
+      const phraseInput = document.getElementById("phrase-input");
+      const userPhrase = phraseInput.value.trim().toLowerCase();
+
+      if (/^[a-z\s]+$/.test(userPhrase) && userPhrase === correctPhrase) {
+        phrasePoints = 15;
+        phraseInput.classList.add("correct");
+      } else {
+        phraseInput.classList.add("incorrect");
+      }
+
+      totalPoints = puzzlePoints + phrasePoints;
+
+      document.getElementById("result").innerHTML = `
+        Puzzle points: <strong>${puzzlePoints}</strong> <br>
+        Phrase points: <strong>${phrasePoints}</strong> <br>
+        Phrase: <strong>"the team followed a methodological and planned strategy to meet every expectation, helping the company grow while strengthening brand loyalty."</strong> <br>
+        Total this level: <strong>${totalPoints}</strong>
+      `;
+
+      // Guardar puntaje
+      let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+      scores[0] = totalPoints;
+      localStorage.setItem("levelScores", JSON.stringify(scores));
+
+      // Deshabilitar inputs
+      document.getElementById("submit-btn").disabled = true;
+      phraseInput.disabled = true;
+      gameFinished = true;
+
+      // Limpiar progreso
+      localStorage.removeItem("progress_level1");
+      localStorage.removeItem("timeLeft_level1");
+
+      document.getElementById("continue-btn").style.display = "inline-block";
+    }
+
+    function next() {
+      window.location.href = "./homeL2.html";
+    }
+
+
+    const TIMER_KEY = "timeLeft_level1";
+    let time = parseInt(localStorage.getItem(TIMER_KEY));
+    if (isNaN(time) || time < 0) time = 120;
+
+    const timerEl = document.getElementById("timer");
+
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(time / 60);
+      const seconds = time % 60;
+      timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      time--;
+
+      if (time < 0) {
+        clearInterval(countdown);
+        timerEl.textContent = "Time's up!";
+        localStorage.removeItem(TIMER_KEY);
+        submitLevel();
+        gameFinished = true;
+      } else {
+        localStorage.setItem(TIMER_KEY, time);
+      }
+    }, 1000);
+
+  
+    window.addEventListener('beforeunload', function(e) {
+      if (!gameFinished) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    });
+  </script>
+</body>
+</html>

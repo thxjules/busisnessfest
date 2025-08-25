@@ -1,0 +1,169 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(rgba(0, 0, 0, 0.436), rgba(0, 0, 0, 0.8)),
+    url("../img/fondo1.png") no-repeat center center fixed;
+  background-size: cover;
+  color: #fff;
+  display: flex;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.sena {
+  display: flex;
+  position: initial;
+  justify-content: space-around;
+  align-items: flex-start;
+}
+
+.container {
+  text-align: center;
+}
+
+h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-style: italic;
+  margin-bottom: 2rem;
+  font-size: 1.2rem;
+  color: #ccc;
+}
+
+.buttons button {
+  margin: 0.5rem;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  background-color: #1c5435;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttons button:hover {
+  background-color: #416b46;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: #222;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  color: #416b46;
+}
+
+.btn_close {
+  background-color: #1c5435;
+  margin: 30px;
+  padding: 20px 40px;
+  color: #ffffff;
+  border: none;
+  border-radius: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.btn_close:hover {
+  background-color: #416b46;
+}
+@media screen and (max-width: 480px) {
+  body {
+    flex-direction: column;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .sena {
+    max-width: 100%;
+    max-height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .container {
+    text-align: center;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+  }
+
+  .buttons button {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1rem;
+  }
+
+  .btn_close {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+}
+  .avatars {
+      display: flex;
+      gap: 15px;
+      margin: 10px 0;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .avatars label {
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .avatars input[type="radio"] {
+      display: none;
+    }
+
+    .avatar-img {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border 0.2s;
+    }
+
+    .avatars input[type="radio"]:checked+img {
+      border: 3px solid #4CAF50;
+      transform: scale(1.1);
+    }
+
