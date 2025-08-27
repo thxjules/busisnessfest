@@ -40,18 +40,18 @@ body {
 }
 
 .dropzone {
-  width: 150px;
-  height: 150px;
-  border: 2px dashed white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #ccc;
+  display: inline-block;
+  margin: 10px;
+  vertical-align: top;
 }
 
 .piece {
-  width: 150px;
-  height: 150px;
-  cursor: grab;
+  width: 120px;
+  height: 120px;
+  touch-action: none; 
 }
 
 textarea,
@@ -129,4 +129,32 @@ button:disabled {
     font-size: 0.9rem;
     height: 70px;
   }
+}
+
+
+.phrase-container input {
+  background-color: #1b4a0e;   
+  color: #fff;                 
+  padding: 8px 10px;
+  margin: 5px;
+  border: 2px solid #b1c5b7;   
+  border-radius: 6px;         
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  font-size: 16px;
+}
+
+.phrase-container input:focus {
+  outline: none;
+  border-color: #4caf50;       
+  box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+.correct {
+  border-color: #28a745 !important;
+  background-color: #2d6a1f !important;
+}
+
+.incorrect {
+  border-color: #ff0080 !important;
+  background-color: #7a0d33 !important;
 }
