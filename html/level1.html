@@ -1,20 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Escape Room - Level 1</title>
-  <link rel="stylesheet" href="../css/level1.css">
+  <link rel="stylesheet" href="../css/level1.css" />
 </head>
+
 <body>
   <div class="player-info">
-    <img id="player-avatar" class="avatar-img" alt="Player Avatar" width="120" height="120">
+    <img id="player-avatar" class="avatar-img" alt="Player Avatar" width="120" height="120" />
     <p id="player-name"></p>
   </div>
 
   <section class="level1">
     <h1>Complete the sentence</h1>
-    <p>Complete the puzzle (5 points) and write the hidden phrase (15 points).</p>
+    <p>
+      Complete the puzzle (5 points) and write the hidden phrase (15 points).
+    </p>
     <p>You have <span id="timer">02:00</span> minutes.</p>
 
     <div class="game">
@@ -27,22 +31,29 @@
       </div>
 
       <div class="pieces-container">
-        <img src="../img/pieza1.png" class="piece" alt="pieza1" draggable="true" data-piece="1">
-        <img src="../img/pieza2.png" class="piece" alt="pieza2" draggable="true" data-piece="2">
-        <img src="../img/pieza3.png" class="piece" alt="pieza3" draggable="true" data-piece="3">
-        <img src="../img/pieza4.png" class="piece" alt="pieza4" draggable="true" data-piece="4">
+        <img src="../img/pieza1.png" class="piece" alt="pieza1" draggable="true" data-piece="1" />
+        <img src="../img/pieza2.png" class="piece" alt="pieza2" draggable="true" data-piece="2" />
+        <img src="../img/pieza3.png" class="piece" alt="pieza3" draggable="true" data-piece="3" />
+        <img src="../img/pieza4.png" class="piece" alt="pieza4" draggable="true" data-piece="4" />
       </div>
     </div>
 
     <!-- Phrase -->
     <div class="phrase-container">
       <p>Type the hidden phrase (English only):</p>
-      <input type="text" id="phrase-input" placeholder="Write here...">
+      <input type="text" id="world-1" placeholder="Write here..." />
+      <input type="text" id="world-2" placeholder="Write here..." />
+      <input type="text" id="world-3" placeholder="Write here..." />
+      <input type="text" id="world-4" placeholder="Write here..." />
+      <input type="text" id="world-5" placeholder="Write here..." />
+      <input type="text" id="world-6" placeholder="Write here..." />
     </div>
 
     <button id="submit-btn" onclick="submitLevel()">Submit</button>
     <div id="result"></div>
-    <button id="continue-btn" style="display:none;" onclick="next()">Continue</button>
+    <button id="continue-btn" style="display: none" onclick="next()">
+      Continue
+    </button>
   </section>
 
   <script>
@@ -55,34 +66,44 @@
       document.getElementById("player-avatar").src = "../" + avatar;
     }
     if (nombre && rol) {
-      document.getElementById("player-name").textContent = `${nombre} – ${rol}`;
+      document.getElementById(
+        "player-name"
+      ).textContent = `${nombre} – ${rol}`;
     }
 
     // ===== PUZZLE =====
-    const pieces = document.querySelectorAll('.piece');
-    const dropzones = document.querySelectorAll('.dropzone');
+    const pieces = document.querySelectorAll(".piece");
+    const dropzones = document.querySelectorAll(".dropzone");
     let placedPieces = 0;
 
-    pieces.forEach(piece => {
-      piece.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('piece', piece.dataset.piece);
+    pieces.forEach((piece) => {
+      piece.addEventListener("dragstart", (e) => {
+        e.dataTransfer.setData("piece", piece.dataset.piece);
       });
     });
 
-    dropzones.forEach(zone => {
-      zone.addEventListener('dragover', e => e.preventDefault());
-      zone.addEventListener('drop', e => {
+    dropzones.forEach((zone) => {
+      zone.addEventListener("dragover", (e) => e.preventDefault());
+      zone.addEventListener("drop", (e) => {
         e.preventDefault();
-        const pieceId = e.dataTransfer.getData('piece');
+        const pieceId = e.dataTransfer.getData("piece");
         if (zone.dataset.piece === pieceId && !zone.hasChildNodes()) {
-          const piece = document.querySelector(`.piece[data-piece="${pieceId}"]`);
+          const piece = document.querySelector(
+            `.piece[data-piece="${pieceId}"]`
+          );
           zone.appendChild(piece);
           placedPieces++;
         }
       });
     });
 
-    const correctPhrase = "business english unlocks success";
+    const correctword1 = "team";
+    const correctword2 = "methodological";
+    const correctword3 = "planned";
+    const correctword4 = "expectation";
+    const correctword5 = "company";
+    const correctword6 = "grow";
+    const correctword7 = "brand- loyalty";
 
     // ===== VALIDACIÓN Y PUNTAJE =====
     let gameFinished = false;
@@ -98,25 +119,33 @@
         puzzlePoints = 5;
       }
 
-      // Frase validada = hasta 15 puntos
-      const phraseInput = document.getElementById("phrase-input");
-      const userPhrase = phraseInput.value.trim().toLowerCase();
+      const inputs = [
+        { el: document.getElementById("world-1"), correct: correctword1 },
+        { el: document.getElementById("world-2"), correct: correctword2 },
+        { el: document.getElementById("world-3"), correct: correctword3 },
+        { el: document.getElementById("world-4"), correct: correctword4 },
+        { el: document.getElementById("world-5"), correct: correctword5 },
+        { el: document.getElementById("world-6"), correct: correctword6 },
+        { el: document.getElementById("world-7"), correct: correctword7 },
+      ];
 
-      if (/^[a-z\s]+$/.test(userPhrase) && userPhrase === correctPhrase) {
-        phrasePoints = 15;
-        phraseInput.classList.add("correct");
-      } else {
-        phraseInput.classList.add("incorrect");
-      }
+      inputs.forEach((input) => {
+        const userWord = input.el.value.trim().toLowerCase();
+        if (userWord === input.correct.toLowerCase()) {
+          phrasePoints += 2;
+          input.el.classList.add("correct");
+        } else {
+          input.el.classList.add("incorrect");
+        }
+      });
 
       totalPoints = puzzlePoints + phrasePoints;
 
       document.getElementById("result").innerHTML = `
-        Puzzle points: <strong>${puzzlePoints}</strong> <br>
-        Phrase points: <strong>${phrasePoints}</strong> <br>
-        Phrase: <strong>"the team followed a methodological and planned strategy to meet every expectation, helping the company grow while strengthening brand loyalty."</strong> <br>
-        Total this level: <strong>${totalPoints}</strong>
-      `;
+    Puzzle points: <strong>${puzzlePoints}</strong> <br>
+    Phrase points: <strong>${phrasePoints}</strong> <br>
+    Total this level: <strong>${totalPoints}</strong>
+  `;
 
       // Guardar puntaje
       let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
@@ -125,7 +154,7 @@
 
       // Deshabilitar inputs
       document.getElementById("submit-btn").disabled = true;
-      phraseInput.disabled = true;
+      inputs.forEach((i) => (i.el.disabled = true));
       gameFinished = true;
 
       // Limpiar progreso
@@ -139,7 +168,6 @@
       window.location.href = "./homeL2.html";
     }
 
-
     const TIMER_KEY = "timeLeft_level1";
     let time = parseInt(localStorage.getItem(TIMER_KEY));
     if (isNaN(time) || time < 0) time = 120;
@@ -149,7 +177,9 @@
     const countdown = setInterval(() => {
       const minutes = Math.floor(time / 60);
       const seconds = time % 60;
-      timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+      timerEl.textContent = `${minutes.toString().padStart(2, "0")}:${seconds
+        .toString()
+        .padStart(2, "0")}`;
       time--;
 
       if (time < 0) {
@@ -163,13 +193,13 @@
       }
     }, 1000);
 
-  
-    window.addEventListener('beforeunload', function(e) {
+    window.addEventListener("beforeunload", function (e) {
       if (!gameFinished) {
         e.preventDefault();
-        e.returnValue = '';
+        e.returnValue = "";
       }
     });
   </script>
 </body>
+
 </html>
