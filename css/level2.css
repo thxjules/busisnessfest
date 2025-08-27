@@ -1,223 +1,218 @@
 body {
-  background-color: #000;
-  color: #cdf8d2;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: radial-gradient(circle at bottom, #000010, #020824, #0a0f29);
+  color: #fff;
   text-align: center;
-  margin: 20px;
-  font-family: Arial, sans-serif;
 }
 
 .player-info {
-  margin: 20px;
-  z-index: 20;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  text-align: left;
 }
+
+
 
 .avatar-img {
-  border-radius: 50%;
-  border: 2px solid #cdf8d2;
-  margin-bottom: 10px;
-  max-width: 100px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%; /* círculo */
+  border: 4px solid #fff; /* borde blanco */
+  box-shadow: 0px 4px 12px rgba(0,0,0,0.5); /* sombra */
+  object-fit: cover;
+  margin-bottom: 20px;
 }
 
-#player-name {
-  font-size: 1.2rem;
-  font-weight: bold;
+/* Nombre del jugador */
+.player-name {
+  font-size: 28px;
+  color: #ffffff;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.7); /* efecto glow */
+  letter-spacing: 2px;
 }
 
-h3 {
-  color: aliceblue;
-  font-size: 20px;
+.contenedor {
+  margin-top: 140px;
+  padding: 20px;
 }
 
 .sistema {
-  margin: 40px auto;
-  width: 420px;
-  height: 420px;
   position: relative;
-  z-index: 1;
+  width: 600px;
+  height: 600px;
+  margin: 40px auto;
+  border-radius: 50%;
 }
 
 .sol {
-  width: 150px;
-  height: 150px;
-  background: url(../img/planeta3.png) no-repeat center/cover;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(circle, yellow, orange, red);
   border-radius: 50%;
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 6;
-  pointer-events: auto;
-  box-shadow: 0 0 18px rgba(234, 171, 44, 0.66);
+  top: 250px;
+  left: 250px;
+  box-shadow: 0 0 60px yellow;
 }
 
 .orbita {
-  width: 320px;
-  height: 320px;
+  border: 1px dotted rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  border: 1px dashed #cdf8d2;
-  box-shadow: 0 0 18px rgba(255, 255, 255, 0.66);
+  pointer-events: none; /* 👈 esto evita que tapen clics */
+}
+.orbita > div {
+  pointer-events: auto; /* 👈 reactiva clics en el hijo (el planeta) */
+}
+
+.orbita1 { width: 200px; height: 200px; animation-duration: 12s; }
+.orbita2 { width: 300px; height: 300px; animation-duration: 18s; }
+.orbita3 { width: 400px; height: 400px; animation-duration: 24s; }
+.orbita4 { width: 500px; height: 500px; animation-duration: 30s; }
+.orbita5 { width: 580px; height: 580px; animation-duration: 36s; }
+
+.tierra, .planeta1, .planeta2, .planeta3, .planeta4 {
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  animation: orbita-rotate 18s linear infinite;
-  pointer-events: none;
-  z-index: 2;
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.orbita1, .orbita2, .orbita3, .orbita4, .orbita5 {
+  animation-name: rotate;         /* usa tu animación */
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+
+.sol {
+  background: url(../img/planeta3.png) no-repeat center/cover;
 }
 
 .tierra {
-  width: 100px;
-  height: 100px;
   background: url(../img/planeta1.png) no-repeat center/cover;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  transform: translate(-50%, -50%);
-  z-index: 10;
-  pointer-events: auto;
-  box-shadow: 0 0 8px rgba(142, 237, 244, 0.12);
-  animation: self-rotate 5s linear infinite, orbita-rotate 18s linear infinite;
 }
-
 .planeta1 {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border: 1px dashed rgba(205, 248, 210, 0.15);
-  animation: self-rotate 5s linear infinite, orbita-rotate 18s linear infinite;
-  pointer-events: auto;
-  z-index: 11;
+  background: url(../img/planeta6.jpeg) no-repeat center/cover;
 }
 
 .planeta2 {
-  width: 50px;
-  height: 50px;
   background: url(../img/planeta2.png) no-repeat center/cover;
-  border-radius: 50%;
-  position: absolute;
-  top: 70%;
-  left: 100%;
-  transform: translate(-50%, -50%);
-  z-index: 12;
-  pointer-events: auto;
-  box-shadow: 0 0 6px rgba(196, 199, 255, 0.2);
-  animation: self-rotate 5s linear infinite, orbita-rotate 18s linear infinite;
 }
 
-@keyframes orbita-rotate {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+.planeta3 {
+  background: url(../img/planeta4.jpg) no-repeat center/cover; /* ojo .jpg */
 }
-@keyframes luna-orbita-rotate {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
+
+.planeta4 {
+  background: url(../img/planeta5.jpg) no-repeat center/cover; /* ojo .jpg */
 }
-@keyframes self-rotate {
-  from {
-    transform: translate(-50%, -50%) rotate(0deg);
-  }
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
-}
+
 
 #input-container {
   margin-top: 20px;
-  text-align: center;
-}
-
-#question {
-  display: block;
-  color: #cdf8d2;
-  font-size: 16px;
-  max-width: 400px;
-  margin: 0 auto 10px auto;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 6px 10px;
-  border-radius: 5px;
 }
 
 #planet-input {
-  padding: 6px 8px;
-  font-size: 14px;
-  width: 220px;
-  margin-right: 8px;
+  padding: 8px;
+  border-radius: 8px;
+  border: none;
+  width: 250px;
+  font-size: 1rem;
 }
 
-#validate-btn {
-  padding: 6px 12px;
-  font-size: 14px;
+button {
+  margin-left: 10px;
+  padding: 8px 15px;
+  border-radius: 10px;
+  border: none;
+  background: #00e5ff;
+  color: black;
+  font-weight: bold;
   cursor: pointer;
+}
+
+button:hover {
+  background: #00bcd4;
 }
 
 #result-container {
   margin-top: 20px;
-  color: #cdf8d2;
-  font-size: 16px;
-  max-width: 400px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 1.2rem;
+  color: #ffeb3b;
   display: none;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 10px;
-  border-radius: 5px;
 }
 
 #continue-btn {
-  margin-top: 20px;
-  padding: 8px 16px;
-  font-size: 16px;
+  margin-top: 15px;
   display: none;
-  cursor: pointer;
 }
 
-@media (max-width: 480px) {
+@keyframes rotate {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ===================== */
+/* 🎯 RESPONSIVE DESIGN  */
+/* ===================== */
+
+/* Tablets */
+@media (max-width: 1024px) {
   .sistema {
-    width: 320px;
-    height: 320px;
-  }
-  .orbita {
-    width: 260px;
-    height: 260px;
+    width: 450px;
+    height: 450px;
   }
   .sol {
     width: 80px;
     height: 80px;
+    top: 185px;
+    left: 185px;
   }
-  .tierra {
-    width: 50px;
-    height: 50px;
+  .orbita1 { width: 150px; height: 150px; }
+  .orbita2 { width: 220px; height: 220px; }
+  .orbita3 { width: 300px; height: 300px; }
+  .orbita4 { width: 380px; height: 380px; }
+  .orbita5 { width: 430px; height: 430px; }
+}
+
+/* Móviles */
+@media (max-width: 600px) {
+  .sistema {
+    width: 300px;
+    height: 300px;
   }
-  .planeta1 {
-    width: 50px;
-    height: 50px;
+  .sol {
+    width: 60px;
+    height: 60px;
+    top: 120px;
+    left: 120px;
   }
-  .planeta2 {
-    width: 20px;
-    height: 20px;
+  .tierra, .planeta1, .planeta2, .planeta3, .planeta4 {
+    width: 30px;
+    height: 30px;
+    top: -15px;
   }
+  .orbita1 { width: 100px; height: 100px; }
+  .orbita2 { width: 150px; height: 150px; }
+  .orbita3 { width: 200px; height: 200px; }
+  .orbita4 { width: 240px; height: 240px; }
+  .orbita5 { width: 280px; height: 280px; }
   #planet-input {
-    width: 160px;
-    font-size: 12px;
+    width: 180px;
+    font-size: 0.9rem;
   }
-  #validate-btn {
-    font-size: 12px;
-    padding: 4px 8px;
+  button {
+    padding: 6px 12px;
+    font-size: 0.9rem;
   }
-  #result-container {
-    font-size: 14px;
-  }
+  
 }

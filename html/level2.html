@@ -7,32 +7,76 @@
   <link rel="stylesheet" href="../css/level2.css">
 </head>
 <body>
+  <!-- Info del jugador -->
   <div class="player-info">
     <img id="player-avatar" class="avatar-img" alt="Player Avatar" width="120" height="120">
     <p id="player-name"></p>
   </div>
 
+  <!-- Instrucciones -->
   <div class="contenedor">
     <h3>Your company is expanding into a new international market, and now every idea counts as a strategic resource.</h3>
     <p>Click on each planet or the Sun to answer the question and put the space office in order.</p>
     <p>Time left: <span id="timer">02:30</span></p>
   </div>
 
+  <!-- Sistema solar -->
   <div class="sistema">
-    <div class="sol" data-word="innovation" data-question="What is the key to success in a new international market?" data-points="10"></div>
-    <div class="orbita">
-      <div class="tierra" data-word="risk assessment" data-question="Before launching a project, what must you perform?" data-points="7"></div>
-      <div class="planeta1" data-word="overlap" data-question="Avoid ___ in your team's tasks to maximize efficiency." data-points="3"></div>
-      <div class="planeta2" data-word="sort out" data-question="You need to ___ all the documents before the meeting." data-points="3"></div>
+    <!-- Sol -->
+    <div class="sol"
+         data-word="innovation"
+         data-question="What is the key to success in a new international market?"
+         data-points="10"></div>
+
+    <!-- Tierra -->
+    <div class="orbita orbita1">
+      <div class="tierra"
+           data-word="risk assessment"
+           data-question="Before launching a project, what must you perform?"
+           data-points="7"></div>
+    </div>
+
+    <!-- Planeta 1 -->
+    <div class="orbita orbita2">
+      <div class="planeta1"
+           data-word="overlap"
+           data-question="Avoid ___ in your team's tasks to maximize efficiency."
+           data-points="3"></div>
+    </div>
+
+    <!-- Planeta 2 -->
+    <div class="orbita orbita3">
+      <div class="planeta2"
+           data-word="sort out"
+           data-question="You need to ___ all the documents before the meeting."
+           data-points="3"></div>
+    </div>
+
+    <!-- Planeta 3 -->
+    <div class="orbita orbita4">
+      <div class="planeta3"
+           data-word="channel"
+           data-question="The medium through which information flows."
+           data-points="5"></div>
+    </div>
+
+    <!-- Planeta 4 -->
+    <div class="orbita orbita5">
+      <div class="planeta4"
+           data-word="causal chain"
+           data-question="A logical sequence that links cause and effect."
+           data-points="6"></div>
     </div>
   </div>
 
+  <!-- Caja de respuestas -->
   <div id="input-container">
     <p id="question">Click a planet or the Sun to see the question</p>
     <input type="text" id="planet-input" placeholder="Type your answer here...">
     <button id="validate-btn">Validate</button>
   </div>
 
+  <!-- Resultados -->
   <div id="result-container"></div>
   <button id="continue-btn">Continue</button>
 
@@ -43,7 +87,8 @@
     if (avatar) document.getElementById("player-avatar").src = "../" + avatar;
     if (nombre && rol) document.getElementById("player-name").textContent = `${nombre} – ${rol}`;
 
-    let time = 150;
+    // Game variables
+    let time = 150; // 2:30 min
     const timerEl = document.getElementById("timer");
     let gameFinished = false;
     let totalScore = 0;
@@ -54,21 +99,23 @@
     const resultContainer = document.getElementById('result-container');
     let currentPlanet = null;
 
-    const planets = document.querySelectorAll('.sol, .tierra, .planeta1, .planeta2');
+    const planets = document.querySelectorAll('.sol, .tierra, .planeta1, .planeta2, .planeta3, .planeta4');
 
+    // Show final result
     const showResult = () => {
       let points = 0;
       planets.forEach(p => {
         if(p.dataset.completed === 'true') points += parseInt(p.dataset.points);
       });
       resultContainer.innerHTML = `
-        Level complete! <br>
-        Total points: <strong>${points}/20</strong>
+        ✅ Level complete! <br>
+        Total points: <strong>${points}/34</strong>
       `;
       resultContainer.style.display = 'block';
       continueBtn.style.display = 'inline-block';
     }
 
+    // Timer
     const countdown = setInterval(() => {
       if(gameFinished) return;
       const minutes = Math.floor(time / 60);
@@ -77,7 +124,7 @@
       time--;
       if(time < 0){
         clearInterval(countdown);
-        timerEl.textContent = "Time's up!";
+        timerEl.textContent = "⏳ Time's up!";
         gameFinished = true;
         input.disabled = true;
         validateBtn.disabled = true;
@@ -87,6 +134,7 @@
       }
     }, 1000);
 
+    // Click on planet
     planets.forEach(planet => {
       planet.style.cursor = 'pointer';
       planet.addEventListener('click', () => {
@@ -99,20 +147,34 @@
       });
     });
 
+    // Validate answer
     validateBtn.addEventListener('click', () => {
-      if(!currentPlanet || gameFinished) return;
+      if(!currentPlanet) {
+        alert("⚠️ Please select a planet or the Sun first.");
+        return;
+      }
+
+      const userAnswer = input.value.trim().toLowerCase();
       const correctWord = currentPlanet.dataset.word.toLowerCase();
-      if(input.value.trim().toLowerCase() === correctWord){
-        alert(`Correct! You earned ${currentPlanet.dataset.points} points.`);
+
+      if(userAnswer === correctWord){
+        resultContainer.innerHTML += `
+          <p>✔️ <strong>${currentPlanet.dataset.question}</strong><br>
+          Answer: <span style="color:#0f0">${currentPlanet.dataset.word}</span></p>
+        `;
+        resultContainer.style.display = 'block';
+
         totalScore += parseInt(currentPlanet.dataset.points);
         currentPlanet.style.backgroundColor = 'green';
         currentPlanet.dataset.completed = 'true';
-      } else {
-        alert('Try again!');
-      }
-      input.value = '';
-      currentPlanet = null;
+        currentPlanet.style.outline = '4px solid limegreen';
+currentPlanet.style.borderRadius = '50%';
 
+      } else {
+        alert('❌ Incorrect! Try again.');
+      }
+
+      // Check if all completed
       const allCompleted = Array.from(planets).every(p => p.dataset.completed === 'true');
       if(allCompleted){
         gameFinished = true;
@@ -124,9 +186,11 @@
       }
     });
 
+    // Continue
     continueBtn.addEventListener('click', () => {
       window.location.href = "./homeL3.html"; 
     });
+  
   </script>
 </body>
 </html>
