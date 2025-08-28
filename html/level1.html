@@ -17,7 +17,7 @@
   <section class="level1">
     <h1>Complete the sentence</h1>
     <p>
-      Complete the puzzle (5 points) and write the hidden phrase (15 points).
+      Complete the puzzle (5 points) and write the hidden phrase (30 points).
     </p>
     <p>You have <span id="timer">02:00</span> minutes.</p>
 
@@ -128,7 +128,7 @@
       let phrasePoints = 0;
 
       if (placedPieces === 4) {
-        puzzlePoints = 5;
+        puzzlePoints = 5; // puzzle vale 5 puntos
       }
 
       const inputs = [
@@ -141,14 +141,17 @@
         { el: document.getElementById("world-7"), correct: correctword7 },
       ];
 
+      // Ponderaciones por palabra (6 de 4 puntos + 1 de 6 puntos = 30 total)
+      const wordPoints = [4, 4, 4, 4, 4, 4, 6];
+
       let allCorrect = true;
 
-      inputs.forEach((input) => {
+      inputs.forEach((input, index) => {
         const userWord = input.el.value.trim().toLowerCase();
         input.el.classList.remove("correct", "incorrect");
 
         if (userWord === input.correct.toLowerCase()) {
-          phrasePoints += 2;
+          phrasePoints += wordPoints[index];
           input.el.classList.add("correct");
         } else {
           input.el.classList.add("incorrect");
@@ -219,4 +222,5 @@
     });
   </script>
 </body>
+
 </html>

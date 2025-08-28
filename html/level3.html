@@ -161,9 +161,8 @@
                 });
             });
 
-            // Recuperar tiempo guardado o usar 240 segundos (4 minutos)
             let timeLeft = parseInt(localStorage.getItem('timeLeft_level3'));
-            if (isNaN(timeLeft) || timeLeft < 0) timeLeft = 240;
+            if (isNaN(timeLeft) || timeLeft < 0) timeLeft = 180;
 
             // Timer
             let timerInterval = setInterval(() => {
@@ -233,12 +232,12 @@
 
                 let score = 0;
                 switch (correct) {
-                    case 6: score = 20; break;
-                    case 5: score = 15; break;
-                    case 4: score = 10; break;
-                    case 3: score = 5; break;
-                    case 2: score = 2; break;
-                    case 1: score = 1; break;
+                    case 6: score = 30; break;
+                    case 5: score = 25; break;
+                    case 4: score = 20; break;
+                    case 3: score = 15; break;
+                    case 2: score = 10; break;
+                    case 1: score = 5; break;
                     default: score = 0;
                 }
 
