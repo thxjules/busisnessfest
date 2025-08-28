@@ -110,7 +110,6 @@
       localStorage.setItem("levelScores", JSON.stringify(scores));
     }
 
-
     // Timer
     const countdown = setInterval(() => {
       if (gameFinished) return;
@@ -150,6 +149,12 @@
         return;
       }
 
+      // 🚫 Si ya estaba completado, no volver a validar
+      if (currentPlanet.dataset.completed === "true") {
+        alert("⚠️ This question was already answered correctly.");
+        return;
+      }
+
       const userAnswer = input.value.trim().toLowerCase();
       const correctWord = currentPlanet.dataset.word.toLowerCase();
 
@@ -165,6 +170,10 @@
         currentPlanet.dataset.completed = 'true';
         currentPlanet.style.outline = '4px solid limegreen';
         currentPlanet.style.borderRadius = '50%';
+
+        // 🚫 Desactivar planeta para que no se vuelva a seleccionar
+        currentPlanet.style.pointerEvents = 'none';
+        currentPlanet = null;
 
       } else {
         alert('❌ Incorrect! Try again.');
