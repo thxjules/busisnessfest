@@ -161,6 +161,7 @@
 
     // Mostrar los puntajes
     levelScores.forEach((score, index) => {
+       const safeScore = score ?? 0;
       const tr = document.createElement("tr");
       tr.innerHTML = `<td>Scenario ${index + 1}</td><td>${score}</td>`;
       scoreTableBody.appendChild(tr);

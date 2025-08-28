@@ -105,7 +105,7 @@
       resultContainer.style.display = 'block';
       continueBtn.style.display = 'inline-block';
       // 🔹 Guardar puntaje en localStorage (posición 1 = Nivel 2)
-      let scores = JSON.parse(localStorage.getItem("levelScores")) || [];
+      let scores = JSON.parse(localStorage.getItem("levelScores")) || [0,0,0];
       scores[1] = points;
       localStorage.setItem("levelScores", JSON.stringify(scores));
     }
